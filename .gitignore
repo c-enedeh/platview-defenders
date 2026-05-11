@@ -1,2 +1,5 @@
 .vercel
 .claude
+.mcp.json
+scripts/config.js
+.env

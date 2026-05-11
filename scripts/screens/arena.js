@@ -1,9 +1,9 @@
 import { navigateTo } from '../router.js';
-import { saveSession, addHistoryEntry, updatePersonalBest } from '../storage.js';
+import { saveSession, getUserId } from '../storage.js';
 import { createTimer } from '../timer.js';
 import { calculateScore } from '../score.js';
 import { updateTimerDisplay, updateBreachMeter, updateMoveCounter, updateHintCount, enableSubmit, showToast } from '../ui.js';
-
+import { saveResult } from '../supabase.js';
 
 import * as domainAlignment  from '../modes/domainAlignment.js';
 import * as threatMatching   from '../modes/threatMatching.js';
@@ -169,7 +169,7 @@ function handleSolved() {
   solved = true;
   timer?.stop();
   if (currentMode === 'incident') incidentResponse.cleanup();
-  enableSubmit(true); // fallback for keyboard/a11y users
+  enableSubmit(true);
   showArenaOverlay('victory');
 }
 
@@ -194,7 +194,6 @@ function showArenaOverlay(type, reason = '') {
   const actEl   = document.getElementById('aro-actions');
   if (!overlay) return;
 
-  // Force animation replay by cloning
   overlay.classList.remove('hidden');
 
   if (type === 'victory') {
@@ -245,7 +244,7 @@ function showArenaOverlay(type, reason = '') {
   });
 }
 
-function finalize() {
+async function finalize() {
   const mod       = MODE_MODULES[currentMode];
   const levelData = mod.getLevelData(currentLevel);
   const moves     = state.moves;
@@ -258,30 +257,25 @@ function finalize() {
     moves,
   });
 
-  addHistoryEntry({
-    mode:  currentMode,
-    level: currentLevel,
-    ...scores,
-    breachPct,
-    moves,
-    timeRemaining: remaining,
+  const entry = { mode: currentMode, level: currentLevel, ...scores, breachPct, moves, timeRemaining: remaining };
+  const { isNewPB } = await saveResult(getUserId(), entry).catch(err => {
+    console.error('[Arena] saveResult:', err);
+    return { isNewPB: false };
   });
-
-  const isNewPB = updatePersonalBest(currentMode, scores.totalScore, currentLevel);
 
   navigateTo('result', {
     scores,
-    mode:        currentMode,
-    level:       currentLevel,
+    mode:          currentMode,
+    level:         currentLevel,
     timeRemaining: remaining,
     moves,
     breachPct,
     isNewPB,
-    success:     true,
+    success:       true,
   });
 }
 
-function navigateToResult(success) {
+async function navigateToResult(success) {
   const mod       = MODE_MODULES[currentMode];
   const levelData = mod.getLevelData(currentLevel);
   const moves     = state?.moves ?? 0;
@@ -293,16 +287,10 @@ function navigateToResult(success) {
     moves,
   });
 
-  if (!success) scores.totalScore = 0; // failed run scores 0
+  if (!success) scores.totalScore = 0;
 
-  addHistoryEntry({
-    mode:  currentMode,
-    level: currentLevel,
-    ...scores,
-    breachPct,
-    moves,
-    timeRemaining: 0,
-  });
+  const entry = { mode: currentMode, level: currentLevel, ...scores, breachPct, moves, timeRemaining: 0 };
+  saveResult(getUserId(), entry).catch(err => console.error('[Arena] saveResult (defeat):', err));
 
   navigateTo('result', {
     scores,

@@ -114,3 +114,16 @@ export function playGlitchIn(screenId) {
   void el.offsetWidth; // force reflow
   el.classList.add('screen-enter');
 }
+
+/* ── Global loading overlay ── */
+export function showGlobalLoading(sub = 'LOADING…') {
+  const el    = document.getElementById('global-loading');
+  const subEl = document.getElementById('global-loading-sub');
+  if (!el) return;
+  if (subEl) subEl.textContent = sub;
+  el.classList.add('active');
+}
+
+export function hideGlobalLoading() {
+  document.getElementById('global-loading')?.classList.remove('active');
+}

@@ -1,0 +1,7 @@
+{
+  "name": "platview-defenders",
+  "type": "module",
+  "scripts": {
+    "setup": "node generate-config.js"
+  }
+}

@@ -144,3 +144,50 @@
   0%   { filter: brightness(0.8); }
   100% { filter: brightness(1.2); }
 }
+
+/* ── Featured card glitch reveal ── */
+@keyframes cardGlitch {
+  0%   {
+    opacity: 0;
+    transform: translateY(10px) skewX(-8deg);
+    clip-path: inset(88% 0 0 0);
+    filter: brightness(2) saturate(2) hue-rotate(25deg);
+  }
+  18%  {
+    opacity: 0.55;
+    clip-path: inset(58% 0 4% 0);
+    transform: skewX(6deg);
+    filter: brightness(1.6) saturate(1.6);
+  }
+  34%  {
+    clip-path: inset(32% 2% 0 1%);
+    transform: skewX(-3deg);
+    filter: brightness(1.25);
+  }
+  52%  {
+    opacity: 0.85;
+    clip-path: inset(10% 0 0 0);
+    transform: skewX(1.5deg);
+    filter: brightness(1.08);
+  }
+  70%  {
+    clip-path: inset(2% 0 0 0);
+    transform: skewX(-0.5deg);
+    filter: brightness(1.02);
+  }
+  86%  {
+    clip-path: inset(0 0 0 0);
+    transform: translateY(-3px) skewX(0.4deg);
+    filter: none;
+  }
+  100% {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+    transform: translateY(0) skewX(0deg);
+    filter: none;
+  }
+}
+
+.card-glitch-in {
+  animation: cardGlitch 0.75s cubic-bezier(0.22, 1, 0.36, 1) both;
+}

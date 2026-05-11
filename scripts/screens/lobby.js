@@ -1,6 +1,9 @@
-import { getCodename, getHistory, getPersonalBest, getOverallBest, logout } from '../storage.js';
+import { getCodename, getUserId, logout } from '../storage.js';
 import { navigateTo } from '../router.js';
 import { formatScore } from '../score.js';
+import { getHistory, getPersonalBests, getOverallBest } from '../supabase.js';
+import { init as initLeaderboard, openLeaderboard } from '../leaderboard.js';
+import { showGlobalLoading, hideGlobalLoading } from '../ui.js';
 
 const MODE_LABELS = { domain: 'Domain Align', threat: 'Threat Match', incident: 'Incident Resp.', rubiks: 'Cube Realign' };
 
@@ -13,13 +16,23 @@ export function onEnter() {
   const codename = getCodename() || 'OPERATOR';
   document.getElementById('lobby-codename').textContent = `⬡ ${codename}`;
 
-  renderPersonalBests();
-  renderHistory();
-  renderOverallBest();
+  initLeaderboard();
   bindModeButtons();
   bindRulesModal();
+  bindLeaderboardButton();
   bindTrainingButton();
   bindLogoutButton();
+
+  // Glitch-reveal animation for featured card
+  const featuredCard = document.querySelector('.mode-card[data-mode="rubiks"]');
+  if (featuredCard) {
+    featuredCard.classList.remove('card-glitch-in');
+    void featuredCard.offsetWidth;
+    featuredCard.classList.add('card-glitch-in');
+  }
+
+  // Load data from Supabase asynchronously — UI shows placeholders instantly
+  loadLobbyData();
 
   // Auto-hide header after inactivity
   const _headerEl = document.querySelector('.lobby-header');
@@ -49,6 +62,25 @@ export function onExit() {
   document.querySelector('.lobby-header')?.classList.remove('header-hidden');
 }
 
+async function loadLobbyData() {
+  const userId = getUserId();
+  if (!userId) return;
+
+  showGlobalLoading('FETCHING MISSION DATA…');
+  try {
+    const [pbs, history, overallBest] = await Promise.all([
+      getPersonalBests(userId),
+      getHistory(userId, 10),
+      getOverallBest(userId),
+    ]);
+    renderPersonalBests(pbs);
+    renderHistory(history);
+    renderOverallBest(overallBest);
+  } finally {
+    hideGlobalLoading();
+  }
+}
+
 function getTargetScreen(mode) {
   return mode === 'rubiks' ? 'rubiks' : 'arena';
 }
@@ -63,7 +95,6 @@ function bindModeButtons() {
     clickHandlers.push({ el: btn, fn });
   });
 
-  // Also allow clicking the card itself
   document.querySelectorAll('.mode-card').forEach(card => {
     const fn = (e) => {
       if (e.target.closest('.btn-mode-start')) return;
@@ -72,6 +103,14 @@ function bindModeButtons() {
     card.addEventListener('click', fn);
     clickHandlers.push({ el: card, fn });
   });
+}
+
+function bindLeaderboardButton() {
+  const btn = document.getElementById('btn-leaderboard');
+  if (!btn) return;
+  const fn = () => openLeaderboard();
+  btn.addEventListener('click', fn);
+  clickHandlers.push({ el: btn, fn });
 }
 
 function bindTrainingButton() {
@@ -94,8 +133,8 @@ function bindLogoutButton() {
 }
 
 function bindRulesModal() {
-  const openFn  = () => document.getElementById('modal-rules').classList.remove('hidden');
-  const closeFn = () => document.getElementById('modal-rules').classList.add('hidden');
+  const openFn    = () => document.getElementById('modal-rules').classList.remove('hidden');
+  const closeFn   = () => document.getElementById('modal-rules').classList.add('hidden');
   const overlayFn = (e) => { if (e.target === e.currentTarget) closeFn(); };
 
   document.getElementById('btn-rules').addEventListener('click', openFn);
@@ -103,33 +142,31 @@ function bindRulesModal() {
   document.getElementById('modal-rules').addEventListener('click', overlayFn);
 
   clickHandlers.push(
-    { el: document.getElementById('btn-rules'),        fn: openFn    },
-    { el: document.getElementById('modal-rules-close'),fn: closeFn   },
-    { el: document.getElementById('modal-rules'),      fn: overlayFn },
+    { el: document.getElementById('btn-rules'),         fn: openFn    },
+    { el: document.getElementById('modal-rules-close'), fn: closeFn   },
+    { el: document.getElementById('modal-rules'),       fn: overlayFn },
   );
 }
 
-function renderPersonalBests() {
+function renderPersonalBests(pbs) {
   document.querySelectorAll('[data-pb]').forEach(el => {
-    const pb = getPersonalBest(el.dataset.pb);
+    const pb = pbs[el.dataset.pb];
     el.textContent = pb ? formatScore(pb.score) : '—';
   });
 }
 
-function renderOverallBest() {
-  const best = getOverallBest();
-  const el   = document.getElementById('pb-score');
-  if (el) el.textContent = best ? formatScore(best.score) : '—';
+function renderOverallBest(bestScore) {
+  const el = document.getElementById('pb-score');
+  if (el) el.textContent = bestScore != null ? formatScore(bestScore) : '—';
 }
 
-function renderHistory() {
+function renderHistory(history) {
   const tbody   = document.getElementById('history-tbody');
   const emptyEl = document.getElementById('history-empty');
   const table   = document.getElementById('history-table');
-  const history = getHistory();
 
   if (!history.length) {
-    table.style.display  = 'none';
+    table.style.display = 'none';
     emptyEl.classList.remove('hidden');
     return;
   }
@@ -138,11 +175,11 @@ function renderHistory() {
   emptyEl.classList.add('hidden');
   tbody.innerHTML = '';
 
-  history.slice(0, 10).forEach(entry => {
-    const breach = Math.round(entry.breachPct || 0);
+  history.forEach(entry => {
+    const breach      = Math.round(entry.breachPct || 0);
     const breachClass = breach < 50 ? 'breach-ok' : breach < 75 ? 'breach-warn' : 'breach-danger';
-    const date = new Date(entry.date).toLocaleDateString('en-US', { month:'short', day:'numeric' });
-    const tr   = document.createElement('tr');
+    const date        = new Date(entry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const tr          = document.createElement('tr');
     tr.innerHTML = `
       <td>${MODE_LABELS[entry.mode] || entry.mode}</td>
       <td>Lv ${entry.level}</td>

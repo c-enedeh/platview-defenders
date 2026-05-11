@@ -1,6 +1,7 @@
-import { getCodename, setCodename } from '../storage.js';
+import { getCodename, setCodename, getUserId, setUserId } from '../storage.js';
 import { navigateTo } from '../router.js';
-import { showToast } from '../ui.js';
+import { showToast, showGlobalLoading, hideGlobalLoading } from '../ui.js';
+import { getOrCreateUser } from '../supabase.js';
 
 const CODENAME_RE = /^[a-zA-Z0-9_]{3,16}$/;
 
@@ -13,9 +14,10 @@ export function onEnter() {
   const returnEl = document.getElementById('reg-returning');
   const btn      = document.getElementById('btn-access');
 
-  // Check for returning user
-  const existing = getCodename();
-  if (existing) {
+  // Returning user — already has a session
+  const existing   = getCodename();
+  const existingId = getUserId();
+  if (existing && existingId) {
     input.value = existing;
     returnEl.textContent = `⬡ Welcome back, ${existing}! Press Access to continue.`;
     returnEl.classList.remove('hidden');
@@ -24,30 +26,42 @@ export function onEnter() {
   }
 
   errorEl.classList.add('hidden');
-  btn.textContent   = 'ACCESS CHALLENGE ▶';
+  btn.textContent      = 'ACCESS CHALLENGE ▶';
   btn.style.background = '';
+  btn.style.color      = '';
+  btn.disabled         = false;
 
-  // Clean up old listener before attaching
   if (submitHandler) form.removeEventListener('submit', submitHandler);
 
-  submitHandler = (e) => {
+  submitHandler = async (e) => {
     e.preventDefault();
     const raw = input.value.trim();
     if (!validate(raw, errorEl)) return;
 
-    setCodename(raw);
-    btn.textContent       = '✓ IDENTITY CONFIRMED';
-    btn.style.background  = 'var(--neon-green)';
-    btn.style.color       = '#000';
-    btn.disabled          = true;
+    btn.textContent = '⬡ CONNECTING…';
+    btn.disabled    = true;
+    errorEl.classList.add('hidden');
+    showGlobalLoading('CONNECTING TO PLATVIEW…');
 
-    setTimeout(() => {
+    try {
+      const user = await getOrCreateUser(raw);
+      setCodename(user.codename);
+      setUserId(user.id);
+
+      const isNew = !existing || existing !== raw;
+      hideGlobalLoading();
+      setTimeout(() => {
+        btn.disabled    = false;
+        btn.textContent = 'ACCESS CHALLENGE ▶';
+        navigateTo(isNew ? 'tutorial' : 'lobby');
+      }, 350);
+    } catch (err) {
+      console.error('[Registration]', err);
+      hideGlobalLoading();
+      btn.textContent = 'ACCESS CHALLENGE ▶';
       btn.disabled    = false;
-      btn.style.color = '';
-      // First-time users see the tutorial; returning users go straight to lobby
-      const isNew = !existing;
-      navigateTo(isNew ? 'tutorial' : 'lobby');
-    }, 650);
+      showValidationError(errorEl, 'Could not connect to server. Check your connection and try again.');
+    }
   };
 
   form.addEventListener('submit', submitHandler);

@@ -1,7 +1,8 @@
 import { createRubiksScene, getLevelData, getObjective, hintMoveToLabel } from '../modes/rubiksCube.js';
 import { createTimer } from '../timer.js';
 import { calculateScore, formatTime } from '../score.js';
-import { addHistoryEntry, updatePersonalBest } from '../storage.js';
+import { getUserId } from '../storage.js';
+import { saveResult } from '../supabase.js';
 import { navigateTo } from '../router.js';
 
 let scene         = null;
@@ -307,17 +308,21 @@ function renderFaceDots(solvedCount) {
 /* ══════════════════════════════════════════
    OUTCOME HANDLERS
 ══════════════════════════════════════════ */
-function handleSolved(remaining, moves) {
-  const scores  = calculateScore({ timeRemaining: remaining, timeLimit: levelData.timeLimit, breachPct, moves });
-  const isNewPB = updatePersonalBest('rubiks', scores.totalScore, currentLevel);
-  addHistoryEntry({ mode: 'rubiks', level: currentLevel, ...scores, breachPct, moves, timeRemaining: remaining });
+async function handleSolved(remaining, moves) {
+  const scores = calculateScore({ timeRemaining: remaining, timeLimit: levelData.timeLimit, breachPct, moves });
+  const entry  = { mode: 'rubiks', level: currentLevel, ...scores, breachPct, moves, timeRemaining: remaining };
+  const { isNewPB } = await saveResult(getUserId(), entry).catch(err => {
+    console.error('[Rubiks] saveResult:', err);
+    return { isNewPB: false };
+  });
   showRubiksOverlay('victory', { scores, remaining, moves, isNewPB });
 }
 
 function handleTimeExpired() {
   const moves  = scene?.getMoves() ?? 0;
   const scores = calculateScore({ timeRemaining: 0, timeLimit: levelData.timeLimit, breachPct: 100, moves });
-  addHistoryEntry({ mode: 'rubiks', level: currentLevel, ...scores, breachPct: 100, moves, timeRemaining: 0 });
+  const entry  = { mode: 'rubiks', level: currentLevel, ...scores, breachPct: 100, moves, timeRemaining: 0 };
+  saveResult(getUserId(), entry).catch(err => console.error('[Rubiks] saveResult (expired):', err));
   showRubiksOverlay('defeat', { scores, remaining: 0, moves, isNewPB: false });
 }
 

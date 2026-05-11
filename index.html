@@ -22,13 +22,15 @@
   <link rel="stylesheet" href="styles/arena.css" />
   <link rel="stylesheet" href="styles/result.css" />
   <link rel="stylesheet" href="styles/rubiks.css" />
+  <link rel="stylesheet" href="styles/leaderboard.css" />
 
-  <!-- Three.js importmap — must precede all type="module" scripts -->
+  <!-- Three.js + Supabase importmap — must precede all type="module" scripts -->
   <script type="importmap">
   {
     "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/",
+      "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
     }
   }
   </script>
@@ -180,6 +182,7 @@
       </div>
       <div class="lobby-meta">
         <span id="lobby-codename" class="codename-badge"></span>
+        <button id="btn-leaderboard" class="btn btn-ghost btn-sm" title="Global Leaderboard" style="font-size:11px;letter-spacing:0.1em;">⬡ LEADERBOARD</button>
         <button id="btn-training" class="btn btn-ghost btn-sm" title="Open Training Academy" style="font-size:11px;letter-spacing:0.1em;">⬡ TRAINING</button>
         <button id="btn-rules" class="btn-rules" title="Rules &amp; Help" aria-label="View rules">?</button>
         <button id="btn-logout" class="btn-logout" title="Log out" aria-label="Log out">
@@ -192,6 +195,35 @@
       <section aria-labelledby="mode-heading">
         <h2 class="section-label" id="mode-heading">Select Game Mode</h2>
         <div class="mode-grid" id="mode-grid">
+
+          <!-- Cube Realignment — FEATURED -->
+          <div class="mode-card mode-card--featured" data-mode="rubiks" role="button" tabindex="0" aria-label="Cube Realignment mode">
+            <div class="mode-card__head">
+              <div class="mode-card__icon">⬡</div>
+              <div class="mode-card__title-block">
+                <h3>Cube Realignment</h3>
+                <span class="mode-card__subtitle">3D · Spatial · Cybersecurity Domains</span>
+              </div>
+            </div>
+            <div class="mode-card__info">
+              <p>Spin a live 3D Rubik's Cube to realign every face to a single security domain. Click-drag to twist rows and columns. Solve it before the clock runs out.</p>
+            </div>
+            <div class="mode-card__swatches">
+              <div class="mode-swatch swatch-iam"      title="IAM"></div>
+              <div class="mode-swatch swatch-cloud"    title="Cloud"></div>
+              <div class="mode-swatch swatch-soc"      title="SOC"></div>
+              <div class="mode-swatch swatch-network"  title="Network"></div>
+              <div class="mode-swatch swatch-endpoint" title="Endpoint"></div>
+              <div class="mode-swatch swatch-data"     title="Data"></div>
+            </div>
+            <div class="mode-card__footer">
+              <div class="mode-pb">
+                <span class="mode-pb-label">Personal Best</span>
+                <span class="mode-pb-score" data-pb="rubiks">—</span>
+              </div>
+              <button class="btn-mode-start" data-mode="rubiks">▶ START</button>
+            </div>
+          </div>
 
           <!-- Domain Alignment -->
           <div class="mode-card" data-mode="domain" role="button" tabindex="0" aria-label="Domain Alignment mode">
@@ -273,35 +305,6 @@
             </div>
           </div>
 
-          <!-- Cube Realignment -->
-          <div class="mode-card" data-mode="rubiks" role="button" tabindex="0" aria-label="Cube Realignment mode">
-            <div class="mode-card__head">
-              <div class="mode-card__icon">⬡</div>
-              <div class="mode-card__title-block">
-                <h3>Cube Realignment</h3>
-                <span class="mode-card__subtitle">3D · Spatial · Cybersecurity Domains</span>
-              </div>
-            </div>
-            <div class="mode-card__info">
-              <p>Spin a live 3D Rubik's Cube to realign every face to a single security domain. Click-drag to twist rows and columns. Solve it before the clock runs out.</p>
-            </div>
-            <div class="mode-card__swatches">
-              <div class="mode-swatch swatch-iam"      title="IAM"></div>
-              <div class="mode-swatch swatch-cloud"    title="Cloud"></div>
-              <div class="mode-swatch swatch-soc"      title="SOC"></div>
-              <div class="mode-swatch swatch-network"  title="Network"></div>
-              <div class="mode-swatch swatch-endpoint" title="Endpoint"></div>
-              <div class="mode-swatch swatch-data"     title="Data"></div>
-            </div>
-            <div class="mode-card__footer">
-              <div class="mode-pb">
-                <span class="mode-pb-label">Personal Best</span>
-                <span class="mode-pb-score" data-pb="rubiks">—</span>
-              </div>
-              <button class="btn-mode-start" data-mode="rubiks">▶ START</button>
-            </div>
-          </div>
-
         </div>
       </section>
 
@@ -350,6 +353,55 @@
         </ul>
       </div>
     </div>
+    <!-- Leaderboard Modal -->
+    <div id="modal-leaderboard" class="modal-overlay leaderboard-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="lb-title">
+      <div class="leaderboard-card">
+
+        <div class="lb-header">
+          <div class="lb-title-block">
+            <span class="lb-hex">⬡</span>
+            <h2 id="lb-title">GLOBAL LEADERBOARD</h2>
+          </div>
+          <button class="modal-close" id="lb-close" aria-label="Close leaderboard">✕</button>
+        </div>
+
+        <div class="lb-tabs" role="tablist" aria-label="Game mode">
+          <button class="lb-tab active" data-lb-mode="domain"   role="tab" aria-selected="true">⬡ DOMAIN</button>
+          <button class="lb-tab"        data-lb-mode="threat"   role="tab" aria-selected="false">⚔ THREAT</button>
+          <button class="lb-tab"        data-lb-mode="incident" role="tab" aria-selected="false">🔥 INCIDENT</button>
+          <button class="lb-tab"        data-lb-mode="rubiks"   role="tab" aria-selected="false">⬡ CUBE</button>
+        </div>
+
+        <div class="lb-body">
+          <p class="lb-loading hidden" id="lb-loading" aria-live="polite">LOADING RANKINGS…</p>
+          <p class="lb-empty   hidden" id="lb-empty">No scores yet — be the first!</p>
+
+          <div class="lb-content hidden" id="lb-content">
+            <div class="lb-table-wrapper">
+              <table class="lb-table" id="lb-table" aria-label="Leaderboard rankings">
+                <thead>
+                  <tr>
+                    <th scope="col">Rank</th>
+                    <th scope="col">Codename</th>
+                    <th scope="col">Best Score</th>
+                    <th scope="col">Level</th>
+                    <th scope="col">Date</th>
+                  </tr>
+                </thead>
+                <tbody id="lb-tbody"></tbody>
+              </table>
+            </div>
+
+            <div class="lb-chart-section">
+              <h3 class="lb-chart-title">TOP 10 SCORES</h3>
+              <div class="lb-chart" id="lb-chart" aria-label="Score comparison chart"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
   </section>
 
   <!-- ═══════════════════════════════════════════
@@ -609,6 +661,18 @@
       <h2 class="aro-title victory" id="aro-title">VICTORY</h2>
       <p class="aro-subtitle" id="aro-subtitle">Puzzle solved — see your score breakdown</p>
       <div class="aro-actions" id="aro-actions"></div>
+    </div>
+  </div>
+
+  <!-- Global loading overlay — shown during login/data-fetch transitions -->
+  <div id="global-loading" class="global-loading" aria-live="polite" aria-label="Loading" role="status">
+    <div class="global-loading-inner">
+      <div class="global-loading-hex" aria-hidden="true">⬡</div>
+      <p class="global-loading-title">PLATVIEW</p>
+      <p class="global-loading-sub" id="global-loading-sub">CONNECTING…</p>
+      <div class="global-loading-track" role="progressbar" aria-label="Loading progress">
+        <div class="global-loading-fill"></div>
+      </div>
     </div>
   </div>
 

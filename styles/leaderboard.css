@@ -1,0 +1,368 @@
+/* ═══════════════════════════════════════════
+   LEADERBOARD OVERLAY
+═══════════════════════════════════════════ */
+
+.leaderboard-overlay {
+  align-items: flex-start;
+  padding-top: clamp(16px, 4vh, 48px);
+}
+
+.leaderboard-card {
+  position: relative;
+  width: 95vw;
+  max-width: 880px;
+  max-height: 90vh;
+  background: var(--surface-1);
+  border: 1px solid rgba(0, 198, 255, 0.25);
+  border-radius: 8px;
+  box-shadow: 0 0 40px rgba(0, 198, 255, 0.08), 0 24px 64px rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Header ── */
+.lb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.lb-title-block {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.lb-hex {
+  color: var(--cyan);
+  font-size: 22px;
+  text-shadow: var(--glow-cyan);
+  line-height: 1;
+}
+
+.lb-header h2 {
+  font-family: var(--font-display);
+  font-size: clamp(16px, 2.5vw, 22px);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--fg);
+  margin: 0;
+}
+
+/* ── Mode tabs ── */
+.lb-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.lb-tabs::-webkit-scrollbar { display: none; }
+
+.lb-tab {
+  flex: 1;
+  min-width: max-content;
+  padding: var(--sp-2) var(--sp-3);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--muted-fg);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--t-fast), border-color var(--t-fast);
+  white-space: nowrap;
+}
+
+.lb-tab:hover {
+  color: var(--fg);
+}
+
+.lb-tab.active {
+  color: var(--cyan);
+  border-bottom-color: var(--tab-accent, var(--cyan));
+}
+
+/* ── Body ── */
+.lb-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--sp-3) var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.lb-loading,
+.lb-empty {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--muted-fg);
+  text-align: center;
+  letter-spacing: 0.08em;
+  padding: var(--sp-6) 0;
+  margin: 0;
+}
+
+.lb-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-5);
+}
+
+/* ── Rank table ── */
+.lb-table-wrapper {
+  overflow-x: auto;
+}
+
+.lb-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.lb-table thead th,
+.lb-table tbody td {
+  padding: var(--sp-2) var(--sp-2);
+  vertical-align: middle;
+}
+
+.lb-table thead th {
+  color: var(--muted-fg);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.lb-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background var(--t-fast);
+}
+
+.lb-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* Rank column — fixed width, centred in both header and body */
+.lb-table th:nth-child(1),
+.lb-rank-cell {
+  width: 52px;
+  min-width: 52px;
+  text-align: center;
+}
+
+/* Codename column — takes remaining space, left-aligned */
+.lb-table th:nth-child(2),
+.lb-name-cell {
+  text-align: left;
+}
+
+/* Best Score column — right-aligned */
+.lb-table th:nth-child(3),
+.lb-score-cell {
+  width: 110px;
+  min-width: 110px;
+  text-align: right;
+}
+
+/* Level column — centred */
+.lb-table th:nth-child(4),
+.lb-level-cell {
+  width: 60px;
+  min-width: 60px;
+  text-align: center;
+}
+
+/* Date column — right-aligned */
+.lb-table th:nth-child(5),
+.lb-date-cell {
+  width: 72px;
+  min-width: 72px;
+  text-align: right;
+}
+
+.lb-rank-num {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--muted-fg);
+  letter-spacing: 0.06em;
+}
+
+/* Codename cell */
+.lb-codename {
+  color: var(--fg);
+  letter-spacing: 0.04em;
+}
+
+/* Score cell */
+.lb-score-cell {
+  color: var(--cyan);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* Level cell */
+.lb-level-cell {
+  color: var(--muted-fg);
+  font-size: 11px;
+}
+
+/* Date cell */
+.lb-date-cell {
+  color: var(--muted-fg);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* ── Current user row ── */
+.lb-table .lb-me {
+  background: rgba(0, 198, 255, 0.06);
+  outline: 1px solid rgba(0, 198, 255, 0.2);
+  outline-offset: -1px;
+}
+
+.lb-me-label {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 0.14em;
+  text-shadow: var(--glow-cyan);
+}
+
+/* ── Badge images ── */
+.lb-badge {
+  display: block;
+  width: 28px;
+  height: 28px;
+  margin: 0 auto;
+}
+
+.lb-badge-gold {
+  filter:
+    brightness(0) saturate(100%)
+    invert(82%) sepia(70%) saturate(700%) hue-rotate(5deg) brightness(105%)
+    drop-shadow(0 0 6px #FFD700);
+}
+
+.lb-badge-silver {
+  filter:
+    brightness(0) saturate(100%)
+    invert(84%) sepia(5%) saturate(200%) hue-rotate(200deg) brightness(95%) contrast(90%)
+    drop-shadow(0 0 5px #C0C0C8);
+}
+
+.lb-badge-bronze {
+  filter:
+    brightness(0) saturate(100%)
+    invert(55%) sepia(60%) saturate(600%) hue-rotate(5deg) brightness(88%) contrast(105%)
+    drop-shadow(0 0 5px #CD7F32);
+}
+
+.lb-badge-cyan {
+  filter:
+    brightness(0) saturate(100%)
+    invert(74%) sepia(90%) saturate(500%) hue-rotate(170deg) brightness(105%)
+    drop-shadow(0 0 4px #00C6FF);
+}
+
+.lb-badge-green {
+  filter:
+    brightness(0) saturate(100%)
+    invert(85%) sepia(80%) saturate(600%) hue-rotate(100deg) brightness(110%)
+    drop-shadow(0 0 4px #00FF8C);
+}
+
+/* ── Score bar chart ── */
+.lb-chart-section {
+  padding-top: var(--sp-2);
+  border-top: 1px solid var(--border);
+}
+
+.lb-chart-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--muted-fg);
+  text-transform: uppercase;
+  margin: 0 0 var(--sp-3) 0;
+}
+
+.lb-chart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.lb-bar-row {
+  display: grid;
+  grid-template-columns: 96px 1fr 80px;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 3px 0;
+}
+
+.lb-bar-row.lb-me .lb-bar-name {
+  color: var(--cyan);
+  font-weight: 700;
+  text-shadow: var(--glow-cyan);
+}
+
+.lb-bar-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted-fg);
+  letter-spacing: 0.04em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lb-bar-track {
+  height: 6px;
+  background: var(--surface-2, rgba(255,255,255,0.06));
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.lb-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  width: 0;
+  transition: width 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.lb-bar-score {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted-fg);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .lb-table th:nth-child(4), .lb-level-cell,
+  .lb-table th:nth-child(5), .lb-date-cell { display: none; }
+
+  .lb-bar-row {
+    grid-template-columns: 72px 1fr 64px;
+  }
+}

@@ -116,7 +116,7 @@
 ══════════════════════════════════════════ */
 .mode-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--sp-6);
 }
 
@@ -386,10 +386,28 @@
 .rules-list li::before { content: '▸'; position: absolute; left: 0; color: var(--cyan); }
 .rules-list strong { color: var(--text-heading); }
 
-/* ── Cube Realignment (rubiks) card ── */
+/* ── Cube Realignment (rubiks) card — featured, full-width ── */
 .mode-card[data-mode="rubiks"]::before        { background: var(--purple); }
 .mode-card[data-mode="rubiks"] {
-  background: linear-gradient(160deg, rgba(123,71,255,0.04) 0%, var(--card) 45%);
+  grid-column: span 2;
+  min-height: 300px;
+  background: linear-gradient(135deg, rgba(123,71,255,0.07) 0%, rgba(0,198,255,0.04) 60%, var(--card) 100%);
+}
+.mode-card--featured::after {
+  content: 'FEATURED';
+  position: absolute;
+  top: var(--sp-4);
+  right: var(--sp-4);
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--purple);
+  background: rgba(123,71,255,0.12);
+  border: 1px solid rgba(123,71,255,0.35);
+  border-radius: var(--radius-sm);
+  padding: 3px var(--sp-2);
+  text-transform: uppercase;
 }
 .mode-card[data-mode="rubiks"]:hover {
   border-color: rgba(123,71,255,0.55);
@@ -411,6 +429,8 @@
 @media (max-width: 700px) {
   .lobby-brand span:not(.lobby-hex) { display: none; }
   .mode-grid { grid-template-columns: 1fr; }
+  .mode-card[data-mode="rubiks"] { grid-column: span 1; min-height: 300px; }
+  .mode-card--featured::after { display: none; }
   .lobby-main { padding: var(--sp-6) var(--sp-4) var(--sp-12); }
   .lobby-header { padding: var(--sp-3) var(--sp-4); }
   .codename-badge { display: none; }

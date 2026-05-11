@@ -1,25 +1,8 @@
 const KEYS = {
   CODENAME: 'pvd:codename',
-  HISTORY:  'pvd:history',
+  USER_ID:  'pvd:userid',
   SESSION:  'pvd:session',
-  PB:       'pvd:pb:', // + mode suffix
 };
-
-// ── localStorage helpers (persistent data) ──
-function safeGet(key, fallback) {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function safeSet(key, value) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch { /* quota exceeded — silently skip */ }
-}
 
 // ── sessionStorage helpers (ephemeral login) ──
 function safeSessionGet(key, fallback) {
@@ -37,7 +20,7 @@ function safeSessionSet(key, value) {
   } catch { /* quota exceeded */ }
 }
 
-// ── Codename — session-scoped (cleared on tab close / logout) ──
+// ── Codename — session-scoped ──
 export function getCodename() {
   return safeSessionGet(KEYS.CODENAME, null);
 }
@@ -46,40 +29,32 @@ export function setCodename(name) {
   safeSessionSet(KEYS.CODENAME, name);
 }
 
-// ── History — persistent across sessions ──
-export function getHistory() {
-  return safeGet(KEYS.HISTORY, []);
+// ── Supabase user ID — session-scoped ──
+export function getUserId() {
+  return safeSessionGet(KEYS.USER_ID, null);
 }
 
-export function addHistoryEntry(entry) {
-  const history = getHistory();
-  history.unshift({ ...entry, date: Date.now() });
-  if (history.length > 50) history.length = 50;
-  safeSet(KEYS.HISTORY, history);
+export function setUserId(id) {
+  safeSessionSet(KEYS.USER_ID, id);
 }
 
-// ── Personal Best — persistent across sessions ──
-export function getPersonalBest(mode) {
-  return safeGet(KEYS.PB + mode, null);
-}
-
-export function updatePersonalBest(mode, score, level) {
-  const current = getPersonalBest(mode);
-  if (!current || score > current.score) {
-    safeSet(KEYS.PB + mode, { score, level });
-    return true; // new PB
+// ── localStorage helpers (theme only) ──
+function safeGet(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
   }
-  return false;
 }
 
-export function getOverallBest() {
-  let best = null;
-  for (const mode of ['domain', 'threat', 'incident', 'rubiks']) {
-    const pb = getPersonalBest(mode);
-    if (pb && (!best || pb.score > best.score)) best = pb;
-  }
-  return best;
+export function safeLocalSet(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch { /* quota exceeded */ }
 }
+
+export { safeGet };
 
 // ── Arena session — session-scoped ──
 export function saveSession(data) {
@@ -94,8 +69,9 @@ export function clearSession() {
   sessionStorage.removeItem(KEYS.SESSION);
 }
 
-// ── Logout — clears session without touching history or PB ──
+// ── Logout — clears session without touching any persistent data ──
 export function logout() {
   sessionStorage.removeItem(KEYS.CODENAME);
+  sessionStorage.removeItem(KEYS.USER_ID);
   sessionStorage.removeItem(KEYS.SESSION);
 }
