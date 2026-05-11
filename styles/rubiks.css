@@ -1,0 +1,527 @@
+/* ══════════════════════════════════════════
+   RUBIK'S CUBE SCREEN — Cube Realignment
+══════════════════════════════════════════ */
+
+#screen-rubiks {
+  position: relative;
+  background:
+    radial-gradient(ellipse 120% 80% at 20% 110%, rgba(0,198,255,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 80% -10%,  rgba(123,71,255,0.10) 0%, transparent 50%),
+    #0a0d14;
+}
+
+/* ── Canvas — position: fixed so it always fills the viewport reliably ── */
+#rubiks-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+  display: block;
+  touch-action: none;
+  /* Three.js manages its own width/height attributes; CSS controls visual display */
+}
+
+/* ── Background gradient layer (cosmetic, behind canvas) ── */
+.rubiks-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: inherit;
+}
+
+/* ══════════════════════════════════════════
+   LOADING OVERLAY
+══════════════════════════════════════════ */
+.rubiks-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(ellipse 120% 80% at 20% 110%, rgba(0,198,255,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 80% 60% at 80% -10%,  rgba(123,71,255,0.08) 0%, transparent 50%),
+    #0a0d14;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+.rubiks-loading.fade-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.rubiks-loading.hidden {
+  display: none;
+}
+
+.rubiks-loading-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-4);
+  text-align: center;
+  max-width: 320px;
+  width: 100%;
+}
+
+/* Spinning hex icon */
+.rubiks-loading-hex {
+  font-size: 72px;
+  line-height: 1;
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan), 0 0 60px rgba(0,198,255,0.3);
+  animation: rubiks-hex-spin 2s linear infinite;
+}
+@keyframes rubiks-hex-spin {
+  0%   { transform: rotate(0deg) scale(1);    filter: blur(0); }
+  25%  { transform: rotate(90deg) scale(1.08); }
+  50%  { transform: rotate(180deg) scale(1);  }
+  75%  { transform: rotate(270deg) scale(1.08); }
+  100% { transform: rotate(360deg) scale(1);  }
+}
+
+.rubiks-loading-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.rubiks-loading-sub {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  min-height: 18px;
+}
+
+/* Progress bar */
+.rubiks-loading-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.rubiks-loading-fill {
+  height: 100%;
+  background: var(--cyan);
+  box-shadow: var(--glow-cyan);
+  border-radius: 2px;
+  width: 0%;
+  /* CSS-driven progress animation */
+  animation: rubiks-load-fill 1.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes rubiks-load-fill {
+  0%   { width: 0%; }
+  40%  { width: 55%; }
+  70%  { width: 78%; }
+  90%  { width: 92%; }
+  100% { width: 92%; } /* scene creation snaps it to 100% */
+}
+
+/* ══════════════════════════════════════════
+   AUTO-HIDING TOP HUD
+══════════════════════════════════════════ */
+.rubiks-hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-3) var(--sp-6);
+  background: rgba(4, 8, 15, 0.92);
+  border-bottom: var(--border-subtle);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  gap: var(--sp-4);
+  transform: translateY(-100%);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.rubiks-hud.hud-visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* Hover trigger zone at top of viewport */
+.rubiks-hud-trigger {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  z-index: 49;
+  pointer-events: auto;
+}
+
+.rubiks-hud-left   { display: flex; align-items: center; gap: var(--sp-3); }
+.rubiks-hud-center { display: flex; align-items: center; gap: var(--sp-6); }
+.rubiks-hud-right  { display: flex; align-items: center; gap: var(--sp-3); }
+
+.rubiks-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: var(--cyan);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.rubiks-brand-hex { font-size: 18px; text-shadow: var(--glow-cyan); }
+
+.rubiks-chip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  padding: 3px 9px;
+}
+.rubiks-level-chip { background: rgba(0,198,255,0.12); color: var(--cyan); }
+
+.rubiks-hud-stat { display: flex; align-items: center; gap: var(--sp-2); }
+.rubiks-hud-icon { color: rgba(255,255,255,0.3); font-size: 14px; }
+.rubiks-hud-timer {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--cyan);
+  text-shadow: 0 0 14px rgba(0,198,255,0.5);
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+.rubiks-hud-timer.urgent {
+  color: var(--red) !important;
+  text-shadow: var(--glow-red);
+}
+
+/* ── Objective label ── */
+.rubiks-objective {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 48;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+  padding: var(--sp-2) var(--sp-4);
+  background: rgba(4,8,15,0.7);
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  border: var(--border-subtle);
+  border-top: none;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.rubiks-objective.visible { opacity: 1; }
+
+/* ══════════════════════════════════════════
+   BOTTOM BREACH BAR (always visible)
+══════════════════════════════════════════ */
+.rubiks-breach-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  z-index: 50;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+.rubiks-breach-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--breach-safe);
+  transition: width 0.25s linear, background-color 0.4s ease;
+}
+
+/* ── Moves counter (bottom-left) ── */
+.rubiks-moves-counter {
+  position: fixed;
+  bottom: 20px;
+  left: var(--sp-6);
+  z-index: 50;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.28);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+.rubiks-moves-counter strong {
+  color: rgba(255,255,255,0.6);
+  font-size: 16px;
+}
+
+/* ── Face-solved indicator dots (bottom-right) ── */
+.rubiks-faces-indicator {
+  position: fixed;
+  bottom: 20px;
+  right: var(--sp-6);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  pointer-events: none;
+}
+.rubiks-face-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+.rubiks-face-dot.solved {
+  background: var(--neon-green);
+  box-shadow: var(--glow-green);
+}
+
+/* ── Hint button (in HUD right) ── */
+.btn-rubiks-hint {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: rgba(123,71,255,0.15);
+  border: 1px solid rgba(123,71,255,0.5);
+  border-radius: var(--radius-md);
+  padding: var(--sp-2) var(--sp-4);
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--purple);
+  cursor: pointer;
+  transition: background var(--t-fast), box-shadow var(--t-fast);
+  white-space: nowrap;
+  animation: hintPulse 2s ease-in-out infinite;
+}
+.btn-rubiks-hint:hover {
+  background: rgba(123,71,255,0.3);
+  box-shadow: 0 0 12px rgba(123,71,255,0.5);
+}
+@keyframes hintPulse {
+  0%, 100% { box-shadow: 0 0 6px rgba(123,71,255,0.3); }
+  50%       { box-shadow: 0 0 18px rgba(123,71,255,0.7); }
+}
+
+/* ══════════════════════════════════════════
+   HINT ARROW OVERLAY
+══════════════════════════════════════════ */
+.rubiks-hint-overlay {
+  position: fixed;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 55;
+  pointer-events: none;
+  animation: hintSlideUp 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.rubiks-hint-overlay.hidden { display: none; }
+
+@keyframes hintSlideUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+.rubiks-hint-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-2);
+  background: rgba(8, 14, 26, 0.92);
+  border: 1px solid rgba(123,71,255,0.55);
+  border-radius: var(--radius-xl);
+  padding: var(--sp-5) var(--sp-8);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 0 28px rgba(123,71,255,0.3), 0 8px 32px rgba(0,0,0,0.5);
+  text-align: center;
+  min-width: 240px;
+}
+
+.rubiks-hint-arrow {
+  font-size: 64px;
+  line-height: 1;
+  color: var(--purple);
+  text-shadow: 0 0 20px rgba(123,71,255,0.8), 0 0 40px rgba(123,71,255,0.4);
+  animation: hintArrowBounce 0.6s ease-in-out infinite alternate;
+  display: block;
+}
+@keyframes hintArrowBounce {
+  from { transform: scale(1);    filter: brightness(1); }
+  to   { transform: scale(1.18); filter: brightness(1.3); }
+}
+
+.rubiks-hint-text {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.rubiks-hint-note {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: rgba(255,255,255,0.38);
+  letter-spacing: 0.05em;
+}
+
+/* ══════════════════════════════════════════
+   HELP / CONTROLS DRAWER (right edge)
+══════════════════════════════════════════ */
+.rubiks-help-drawer {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 55;
+  display: flex;
+  align-items: center;
+}
+
+/* Toggle tab */
+.rubiks-help-toggle {
+  width: 32px;
+  min-height: 100px;
+  background: rgba(8,14,26,0.88);
+  border: 1px solid rgba(123,71,255,0.4);
+  border-right: none;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--t-fast), border-color var(--t-fast);
+  flex-shrink: 0;
+  padding: 0;
+}
+.rubiks-help-toggle:hover {
+  background: rgba(123,71,255,0.18);
+  border-color: rgba(123,71,255,0.7);
+}
+.rubiks-help-toggle-icon {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--purple);
+  writing-mode: vertical-lr;
+  text-orientation: mixed;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+/* Drawer content panel */
+.rubiks-help-content {
+  width: 0;
+  overflow: hidden;
+  transition: width 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+  background: rgba(8,14,26,0.95);
+  border: 1px solid rgba(123,71,255,0.4);
+  border-right: none;
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+  backdrop-filter: blur(16px);
+}
+.rubiks-help-drawer.open .rubiks-help-content {
+  width: 260px;
+}
+
+/* Inner content wrapper prevents layout shift during animation */
+.rubiks-help-content > * {
+  padding: var(--sp-5) var(--sp-5);
+  min-width: 260px;
+}
+
+.rubiks-help-title {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--purple);
+  text-transform: uppercase;
+  border-left: 3px solid var(--purple);
+  padding-left: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+
+.rubiks-help-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+}
+.rubiks-help-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.55;
+}
+.rubiks-help-list li strong { color: rgba(255,255,255,0.9); font-weight: 600; }
+.rubiks-help-icon-item { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+.rubiks-help-hint-note {
+  margin-top: var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  background: rgba(123,71,255,0.1);
+  border: 1px solid rgba(123,71,255,0.3);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.5;
+}
+.rubiks-help-hint-note strong { color: var(--purple); }
+/* Hide hint-note for levels > 3 */
+.rubiks-help-hint-note.hidden { display: none; }
+
+@media (max-width: 700px) {
+  .rubiks-hud { padding: var(--sp-2) var(--sp-4); }
+  .rubiks-hud-center { gap: var(--sp-4); }
+  .rubiks-hud-timer { font-size: 18px; }
+  .rubiks-help-drawer.open .rubiks-help-content { width: 220px; }
+  .rubiks-help-content > * { min-width: 220px; }
+  .rubiks-brand span:not(.rubiks-brand-hex) { display: none; }
+  .rubiks-hint-card  { padding: var(--sp-3) var(--sp-5); min-width: 200px; }
+  .rubiks-hint-arrow { font-size: 48px; }
+}
+
+@media (max-width: 480px) {
+  /* Help drawer anchors to bottom-right corner on narrow phones */
+  .rubiks-help-drawer {
+    top: auto;
+    bottom: 20px;
+    right: 0;
+    transform: none;
+  }
+  .rubiks-help-drawer.open .rubiks-help-content { width: min(280px, 90vw); }
+  .rubiks-help-content > * { min-width: min(280px, 90vw); }
+
+  .rubiks-hud        { padding: var(--sp-2) var(--sp-3); gap: var(--sp-2); }
+  .rubiks-hud-timer  { font-size: 16px; }
+  .rubiks-level-chip { font-size: 9px; padding: 2px 6px; }
+  .rubiks-brand      { display: none; }
+
+  .rubiks-moves-counter   { bottom: 18px; left: var(--sp-3); font-size: 10px; }
+  .rubiks-faces-indicator { bottom: 18px; right: var(--sp-3); }
+
+  .rubiks-hint-overlay { bottom: 40px; }
+}
