@@ -1,0 +1,185 @@
+#screen-result {
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 5%, rgba(0,198,255,0.06) 0%, transparent 60%),
+    var(--bg-void);
+  align-items: center;
+  justify-content: center;
+}
+
+.result-card {
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--sp-16) var(--sp-8);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-8);
+}
+
+/* ── Status ── */
+.result-status {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.status-icon {
+  font-size: 60px;
+  line-height: 1;
+  color: var(--neon-green);
+  text-shadow: var(--glow-green);
+  animation: popIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.status-icon.failure {
+  color: var(--red);
+  text-shadow: var(--glow-red);
+}
+.status-title {
+  font-family: var(--font-display);
+  font-size: clamp(22px, 5vw, 34px);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  animation: fadeSlideUp 0.45s 0.2s ease both;
+}
+
+/* ── Score block ── */
+.result-score-block {
+  text-align: center;
+  animation: fadeSlideUp 0.45s 0.3s ease both;
+}
+.result-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.28em;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  margin-bottom: var(--sp-2);
+}
+.result-score {
+  font-family: var(--font-display);
+  font-size: clamp(48px, 10vw, 76px);
+  font-weight: 700;
+  color: var(--cyan);
+  text-shadow: var(--glow-cyan);
+  line-height: 1;
+}
+
+/* ── Stats row ── */
+.result-stats {
+  display: flex;
+  gap: var(--sp-10);
+  animation: fadeSlideUp 0.45s 0.4s ease both;
+}
+.result-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-1);
+}
+.stat-icon  { font-size: 20px; color: rgba(255,255,255,0.35); }
+.stat-value { font-family: var(--font-mono); font-size: 18px; font-weight: 600; color: #fff; }
+.stat-label { font-family: var(--font-display); font-size: 9px; letter-spacing: 0.2em; color: rgba(255,255,255,0.28); text-transform: uppercase; }
+
+/* ── Score breakdown ── */
+.score-breakdown {
+  width: 100%;
+  background: var(--bg-surface);
+  border: var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5) var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.score-breakdown h3 {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  margin-bottom: var(--sp-1);
+}
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: rgba(255,255,255,0.55);
+}
+.breakdown-row span:last-child {
+  color: var(--neon-green);
+  font-weight: 600;
+}
+.breakdown-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.06);
+  margin: var(--sp-1) 0;
+}
+.breakdown-total {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+}
+.breakdown-total span:last-child { color: var(--cyan); text-shadow: var(--glow-cyan); }
+
+/* ── Personal best notice ── */
+.pb-notice {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--amber);
+  letter-spacing: 0.1em;
+  text-align: center;
+  text-shadow: var(--glow-amber);
+}
+
+/* ── Actions ── */
+.result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  justify-content: center;
+  animation: fadeSlideUp 0.45s 0.6s ease both;
+  width: 100%;
+}
+
+@media (max-width: 700px) {
+  .result-card { padding: var(--sp-10) var(--sp-5); }
+}
+
+@media (max-width: 480px) {
+  .result-card        { padding: var(--sp-8) var(--sp-4); gap: var(--sp-6); }
+  .result-stats       { flex-wrap: wrap; gap: var(--sp-6); justify-content: center; }
+  .result-stat        { min-width: 80px; }
+  .score-breakdown    { padding: var(--sp-4) var(--sp-4); }
+}
+
+/* ── Particle burst container ── */
+#result-particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  animation: particleBurst 1.2s ease forwards;
+  opacity: 0;
+}
+@keyframes particleBurst {
+  0%   { transform: translate(0,0) scale(1); opacity: 0.9; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+}

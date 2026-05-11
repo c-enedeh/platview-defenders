@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Platview Cyber Defense Challenge</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+  <link rel="stylesheet" href="styles/animations.css" />
+  <link rel="stylesheet" href="styles/tutorial.css" />
+  <link rel="stylesheet" href="styles/registration.css" />
+  <link rel="stylesheet" href="styles/lobby.css" />
+  <link rel="stylesheet" href="styles/arena.css" />
+  <link rel="stylesheet" href="styles/result.css" />
+  <link rel="stylesheet" href="styles/rubiks.css" />
+
+  <!-- Three.js importmap — must precede all type="module" scripts -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body data-screen="registration">
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 0 — TUTORIAL / ONBOARDING
+  ════════════════════════════════════════════ -->
+  <section id="screen-tutorial" class="screen" aria-label="Training Academy">
+
+    <header class="tut-header">
+      <div class="tut-brand">
+        <span class="tut-brand-hex">⬡</span>
+        <span>PLATVIEW TRAINING ACADEMY</span>
+      </div>
+      <span class="tut-step-counter" id="tut-step-counter">01 / 06</span>
+      <button id="btn-tut-skip" class="btn btn-ghost btn-sm">SKIP TO LOBBY ▶</button>
+    </header>
+
+    <div class="tut-body">
+      <!-- Slide viewport -->
+      <div class="tut-viewport">
+        <div class="tut-track" id="tut-track">
+          <!-- Slides injected by tutorial.js -->
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="tut-nav" aria-label="Tip navigation">
+        <button class="tut-arrow" id="tut-prev" aria-label="Previous tip" disabled>‹</button>
+        <div class="tut-dots" id="tut-dots" role="tablist" aria-label="Tips"></div>
+        <button class="tut-arrow" id="tut-next" aria-label="Next tip">›</button>
+      </nav>
+    </div>
+
+    <footer class="tut-footer">
+      <button class="btn btn-ghost btn-md" id="btn-preview-demo">
+        👁 PREVIEW HOW TO PLAY
+      </button>
+      <button class="btn btn-primary btn-md" id="btn-tut-enter">
+        ENTER CHALLENGE ▶
+      </button>
+    </footer>
+
+    <!-- ── Demo Preview Modal ── -->
+    <div id="modal-demo" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="demo-modal-title">
+      <div class="modal-card demo-modal-card">
+        <button class="modal-close" id="close-demo-modal" aria-label="Close demo">✕</button>
+
+        <h2 class="demo-modal-title" id="demo-modal-title">HOW TO PLAY — LIVE DEMO</h2>
+
+        <!-- Mode selector tabs -->
+        <div class="demo-mode-tabs" role="tablist" aria-label="Demo game mode">
+          <button class="demo-tab active" data-demo-mode="domain" role="tab" aria-selected="true">⬡ DOMAIN ALIGN</button>
+          <button class="demo-tab" data-demo-mode="threat" role="tab" aria-selected="false">⚔ THREAT MATCH</button>
+          <button class="demo-tab" data-demo-mode="incident" role="tab" aria-selected="false">🔥 INCIDENT RESP</button>
+        </div>
+
+        <p class="demo-step-label" id="demo-step-label">WATCH THE CURSOR MOVE THE TILES</p>
+
+        <!-- Mini breach bar — only visible in incident mode -->
+        <div class="demo-breach-row hidden" id="demo-breach-row" aria-label="Demo breach meter">
+          <span class="demo-breach-label">BREACH</span>
+          <div class="demo-breach-track">
+            <div class="demo-breach-fill" id="demo-breach-fill"></div>
+          </div>
+          <span class="demo-breach-pct" id="demo-breach-pct">0%</span>
+        </div>
+
+        <!-- Animated demo stage -->
+        <div class="demo-stage" id="demo-stage" aria-hidden="true">
+          <!-- Demo cursor indicator -->
+          <div class="demo-cursor" id="demo-cursor"></div>
+          <!-- Demo board — tiles injected by JS -->
+          <div class="demo-board" id="demo-board"></div>
+        </div>
+
+        <p class="demo-hint" id="demo-hint">Click any tile to select it — it will glow white</p>
+
+        <!-- Loop progress bar -->
+        <div class="demo-progress-track">
+          <div class="demo-progress-fill" id="demo-progress-fill"></div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 1 — REGISTRATION
+  ════════════════════════════════════════════ -->
+  <section id="screen-registration" class="screen" aria-label="Registration">
+    <div class="reg-card">
+      <div class="reg-logo">
+        <span class="logo-hex">⬡</span>
+        <span>PLATVIEW TECHNOLOGIES</span>
+      </div>
+
+      <span class="logo-divider"></span>
+
+      <h1 class="reg-title">NinjaCISO <span>Registration</span></h1>
+
+      <p class="reg-desc">
+        Welcome to Platview Technologies. Register your codename to access the
+        Cyber Defense Challenge. Ensure all colours on the Rubik Cube are aligned.
+      </p>
+
+      <form class="reg-form" id="reg-form" novalidate autocomplete="off">
+        <div class="input-wrapper">
+          <span class="input-icon">▸</span>
+          <input
+            id="input-codename"
+            type="text"
+            class="text-input"
+            placeholder="Enter your codename…"
+            maxlength="16"
+            spellcheck="false"
+            aria-label="Codename"
+            aria-describedby="reg-error"
+          />
+          <span class="blink" style="color:var(--cyan); font-size:18px; flex-shrink:0;">|</span>
+        </div>
+
+        <p id="reg-returning" class="reg-returning hidden"></p>
+        <p id="reg-error" class="reg-error hidden" role="alert"></p>
+
+        <button type="submit" id="btn-access" class="btn btn-primary btn-lg">
+          ACCESS CHALLENGE ▶
+        </button>
+      </form>
+
+      <div class="mini-cube-preview" aria-hidden="true">
+        <div class="cube-face"></div><div class="cube-face"></div><div class="cube-face"></div>
+        <div class="cube-face"></div><div class="cube-face"></div><div class="cube-face"></div>
+        <div class="cube-face"></div><div class="cube-face"></div><div class="cube-face"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 2 — LOBBY
+  ════════════════════════════════════════════ -->
+  <section id="screen-lobby" class="screen" aria-label="Game Lobby">
+    <header class="lobby-header">
+      <div class="lobby-brand">
+        <span class="lobby-hex">⬡</span>
+        <span>PLATVIEW CYBER DEFENSE CHALLENGE</span>
+      </div>
+      <div class="lobby-meta">
+        <span id="lobby-codename" class="codename-badge"></span>
+        <button id="btn-training" class="btn btn-ghost btn-sm" title="Open Training Academy" style="font-size:11px;letter-spacing:0.1em;">⬡ TRAINING</button>
+        <button id="btn-rules" class="btn-rules" title="Rules &amp; Help" aria-label="View rules">?</button>
+        <button id="btn-logout" class="btn-logout" title="Log out" aria-label="Log out">
+          <span aria-hidden="true">⏻</span> LOGOUT
+        </button>
+      </div>
+    </header>
+
+    <main class="lobby-main">
+      <section aria-labelledby="mode-heading">
+        <h2 class="section-label" id="mode-heading">Select Game Mode</h2>
+        <div class="mode-grid" id="mode-grid">
+
+          <!-- Domain Alignment -->
+          <div class="mode-card" data-mode="domain" role="button" tabindex="0" aria-label="Domain Alignment mode">
+            <div class="mode-card__head">
+              <div class="mode-card__icon">⬡</div>
+              <div class="mode-card__title-block">
+                <h3>Domain Alignment</h3>
+                <span class="mode-card__subtitle">IAM · Cloud · SOC · Network · Endpoint · Data</span>
+              </div>
+            </div>
+            <div class="mode-card__info">
+              <p>Swap tiles to align cybersecurity domains into correct row groupings before time runs out. Master all 6 security pillars across 10 levels.</p>
+            </div>
+            <div class="mode-card__swatches">
+              <div class="mode-swatch swatch-iam"      title="IAM"></div>
+              <div class="mode-swatch swatch-cloud"    title="Cloud"></div>
+              <div class="mode-swatch swatch-soc"      title="SOC"></div>
+              <div class="mode-swatch swatch-network"  title="Network"></div>
+              <div class="mode-swatch swatch-endpoint" title="Endpoint"></div>
+              <div class="mode-swatch swatch-data"     title="Data"></div>
+            </div>
+            <div class="mode-card__footer">
+              <div class="mode-pb">
+                <span class="mode-pb-label">Personal Best</span>
+                <span class="mode-pb-score" data-pb="domain">—</span>
+              </div>
+              <button class="btn-mode-start" data-mode="domain">▶ START</button>
+            </div>
+          </div>
+
+          <!-- Threat Matching -->
+          <div class="mode-card" data-mode="threat" role="button" tabindex="0" aria-label="Threat Matching mode">
+            <div class="mode-card__head">
+              <div class="mode-card__icon">⚔</div>
+              <div class="mode-card__title-block">
+                <h3>Threat Matching</h3>
+                <span class="mode-card__subtitle">Threats · Controls · Mitigations</span>
+              </div>
+            </div>
+            <div class="mode-card__info">
+              <p>Match each cyber threat card to its correct defence control. Every wrong pairing increases breach risk — precision is everything across 10 escalating rounds.</p>
+            </div>
+            <div class="mode-card__swatches">
+              <div class="mode-swatch swatch-threat"  title="Threats"></div>
+              <div class="mode-swatch swatch-control" title="Controls"></div>
+            </div>
+            <div class="mode-card__footer">
+              <div class="mode-pb">
+                <span class="mode-pb-label">Personal Best</span>
+                <span class="mode-pb-score" data-pb="threat">—</span>
+              </div>
+              <button class="btn-mode-start" data-mode="threat">▶ START</button>
+            </div>
+          </div>
+
+          <!-- Incident Response -->
+          <div class="mode-card" data-mode="incident" role="button" tabindex="0" aria-label="Incident Response mode">
+            <div class="mode-card__head">
+              <div class="mode-card__icon">🔥</div>
+              <div class="mode-card__title-block">
+                <h3>Incident Response</h3>
+                <span class="mode-card__subtitle">Live Threats · Breach Timer · Triage</span>
+              </div>
+            </div>
+            <div class="mode-card__info">
+              <p>Threats spawn in real time and push your breach meter higher. Click to neutralize them — survive the full countdown without hitting 100% across 10 intensity levels.</p>
+            </div>
+            <div class="mode-card__swatches">
+              <div class="mode-swatch swatch-incident" title="Incident"></div>
+              <div class="mode-swatch swatch-threat"   title="Active Threat"></div>
+              <div class="mode-swatch swatch-control"  title="Neutralized"></div>
+            </div>
+            <div class="mode-card__footer">
+              <div class="mode-pb">
+                <span class="mode-pb-label">Personal Best</span>
+                <span class="mode-pb-score" data-pb="incident">—</span>
+              </div>
+              <button class="btn-mode-start" data-mode="incident">▶ START</button>
+            </div>
+          </div>
+
+          <!-- Cube Realignment -->
+          <div class="mode-card" data-mode="rubiks" role="button" tabindex="0" aria-label="Cube Realignment mode">
+            <div class="mode-card__head">
+              <div class="mode-card__icon">⬡</div>
+              <div class="mode-card__title-block">
+                <h3>Cube Realignment</h3>
+                <span class="mode-card__subtitle">3D · Spatial · Cybersecurity Domains</span>
+              </div>
+            </div>
+            <div class="mode-card__info">
+              <p>Spin a live 3D Rubik's Cube to realign every face to a single security domain. Click-drag to twist rows and columns. Solve it before the clock runs out.</p>
+            </div>
+            <div class="mode-card__swatches">
+              <div class="mode-swatch swatch-iam"      title="IAM"></div>
+              <div class="mode-swatch swatch-cloud"    title="Cloud"></div>
+              <div class="mode-swatch swatch-soc"      title="SOC"></div>
+              <div class="mode-swatch swatch-network"  title="Network"></div>
+              <div class="mode-swatch swatch-endpoint" title="Endpoint"></div>
+              <div class="mode-swatch swatch-data"     title="Data"></div>
+            </div>
+            <div class="mode-card__footer">
+              <div class="mode-pb">
+                <span class="mode-pb-label">Personal Best</span>
+                <span class="mode-pb-score" data-pb="rubiks">—</span>
+              </div>
+              <button class="btn-mode-start" data-mode="rubiks">▶ START</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <section class="history-section" aria-labelledby="history-heading">
+        <h2 class="section-label" id="history-heading">Mission History</h2>
+        <div id="history-table-wrapper">
+          <table class="history-table" id="history-table" aria-label="Mission history">
+            <thead>
+              <tr>
+                <th scope="col">Mode</th>
+                <th scope="col">Level</th>
+                <th scope="col">Score</th>
+                <th scope="col">Breach</th>
+                <th scope="col">Date</th>
+              </tr>
+            </thead>
+            <tbody id="history-tbody"></tbody>
+          </table>
+          <p id="history-empty" class="history-empty hidden">No missions completed yet. Start your first challenge.</p>
+        </div>
+
+        <div class="personal-best-bar">
+          <span class="pb-label">Overall Personal Best</span>
+          <span class="pb-score" id="pb-score">—</span>
+        </div>
+      </section>
+    </main>
+
+    <!-- Rules Modal -->
+    <div id="modal-rules" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+      <div class="modal-card">
+        <button class="modal-close" id="modal-rules-close" aria-label="Close rules">✕</button>
+        <h2 id="rules-title" style="font-family:var(--font-display);font-size:22px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:var(--sp-2);">
+          HOW TO PLAY
+        </h2>
+        <ul class="rules-list">
+          <li>Choose a game mode and complete all 10 levels.</li>
+          <li>Click tiles to interact — swap, match, or neutralize depending on the mode.</li>
+          <li>Every wrong move increases the Breach Meter.</li>
+          <li>If the Breach Meter hits 100% — mission failed.</li>
+          <li>Score = Base (10,000) + Speed Bonus + Accuracy Bonus + Move Efficiency.</li>
+          <li>Use the Hint button (×3 per level) to highlight a correct placement.</li>
+          <li><strong style="color:var(--cyan);">Domain Alignment:</strong> Click two tiles to swap them. Align each row to one domain.</li>
+          <li><strong style="color:var(--neon-green);">Threat Matching:</strong> Click a threat tile, then its matching control. Wrong pair = breach.</li>
+          <li><strong style="color:var(--red);">Incident Response:</strong> Click threat tiles to neutralize them before breach hits 100%.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 3 — ARENA
+  ════════════════════════════════════════════ -->
+  <section id="screen-arena" class="screen" aria-label="Game Arena">
+
+    <!-- HUD -->
+    <header class="arena-hud">
+      <div class="hud-left">
+        <span class="hud-chip level-chip" id="hud-level">LEVEL 01</span>
+        <span class="hud-chip mode-chip" id="hud-mode">DOMAIN ALIGNMENT</span>
+      </div>
+      <div class="hud-center">
+        <div class="hud-stat" aria-label="Time remaining">
+          <span class="hud-icon">⏱</span>
+          <span class="hud-value hud-timer" id="hud-timer">00:00</span>
+        </div>
+        <div class="hud-stat" aria-label="Move count">
+          <span class="hud-icon">↔</span>
+          <span class="hud-value" id="hud-moves">0</span>
+          <span class="hud-unit">MOVES</span>
+        </div>
+      </div>
+      <div class="hud-right">
+        <button class="btn btn-ghost btn-sm" id="btn-restart">↺ RESTART</button>
+        <button class="btn btn-danger btn-sm" id="btn-exit-arena">✕ EXIT</button>
+      </div>
+    </header>
+
+    <!-- Breach bar -->
+    <div class="breach-bar-wrapper" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Breach risk">
+      <span class="breach-label">BREACH RISK</span>
+      <div class="breach-track">
+        <div class="breach-fill" id="breach-fill"></div>
+      </div>
+      <span class="breach-pct" id="breach-pct">0%</span>
+    </div>
+
+    <!-- Puzzle area -->
+    <main class="arena-main">
+      <div class="puzzle-header">
+        <h2 class="puzzle-title" id="puzzle-title">Loading…</h2>
+        <p class="puzzle-objective" id="puzzle-objective"></p>
+      </div>
+
+      <div class="puzzle-layout" id="puzzle-layout">
+        <!-- Current board -->
+        <div class="board-wrapper">
+          <span class="board-label">CURRENT STATE</span>
+          <div class="puzzle-board" id="puzzle-board" data-cols="3" role="grid" aria-label="Puzzle board"></div>
+        </div>
+
+        <!-- Target board (Domain Alignment only) -->
+        <div class="board-wrapper target-wrapper" id="target-wrapper">
+          <span class="board-label">TARGET STATE</span>
+          <div class="puzzle-board target-board" id="target-board" data-cols="3" aria-label="Target state" aria-readonly="true"></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer controls -->
+    <footer class="arena-footer">
+      <button class="btn-hint" id="btn-hint" aria-label="Use hint">
+        💡 HINT
+        <span class="hint-count" id="hint-count">×3</span>
+      </button>
+      <button class="btn btn-primary btn-md" id="btn-submit-score" disabled>
+        → SEE BREAKDOWN
+      </button>
+    </footer>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 4 — RESULT
+  ════════════════════════════════════════════ -->
+  <section id="screen-result" class="screen" aria-label="Mission Result">
+    <div id="result-particles" aria-hidden="true"></div>
+
+    <div class="result-card">
+      <div class="result-status">
+        <span class="status-icon" id="status-icon" aria-hidden="true">✓</span>
+        <h1 class="status-title" id="status-title">MISSION COMPLETE</h1>
+      </div>
+
+      <div class="result-score-block">
+        <span class="result-label">FINAL SCORE</span>
+        <div class="result-score" id="result-score" aria-live="polite">0</div>
+      </div>
+
+      <div class="result-stats">
+        <div class="result-stat">
+          <span class="stat-icon">⏱</span>
+          <span class="stat-value" id="rs-time">—</span>
+          <span class="stat-label">TIME</span>
+        </div>
+        <div class="result-stat">
+          <span class="stat-icon">↔</span>
+          <span class="stat-value" id="rs-moves">—</span>
+          <span class="stat-label">MOVES</span>
+        </div>
+        <div class="result-stat">
+          <span class="stat-icon">⚠</span>
+          <span class="stat-value" id="rs-breach">—</span>
+          <span class="stat-label">BREACH</span>
+        </div>
+      </div>
+
+      <div class="score-breakdown anim-slide-row-1">
+        <h3>SCORE BREAKDOWN</h3>
+        <div class="breakdown-row">
+          <span>Base Score</span>
+          <span id="bonus-base">+10,000</span>
+        </div>
+        <div class="breakdown-row anim-slide-row-1">
+          <span>Speed Bonus</span>
+          <span id="bonus-speed">+0</span>
+        </div>
+        <div class="breakdown-row anim-slide-row-2">
+          <span>Accuracy Bonus</span>
+          <span id="bonus-accuracy">+0</span>
+        </div>
+        <div class="breakdown-row anim-slide-row-3">
+          <span>Move Efficiency</span>
+          <span id="bonus-moves">+0</span>
+        </div>
+        <div class="breakdown-divider"></div>
+        <div class="breakdown-total">
+          <span>TOTAL</span>
+          <span id="breakdown-total">—</span>
+        </div>
+      </div>
+
+      <div class="pb-notice anim-pb-flash hidden" id="pb-notice">
+        🏆 NEW PERSONAL BEST!
+      </div>
+
+      <div class="result-actions">
+        <button class="btn btn-ghost btn-md" id="btn-retry">↺ RETRY LEVEL</button>
+        <button class="btn btn-ghost btn-md" id="btn-next-level">▶ NEXT LEVEL</button>
+        <button class="btn btn-primary btn-md" id="btn-lobby">⬡ MAIN LOBBY</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SCREEN 5 — RUBIK'S CUBE (Cube Realignment)
+  ════════════════════════════════════════════ -->
+  <section id="screen-rubiks" class="screen" aria-label="Cube Realignment">
+
+    <!-- Three.js canvas fills entire screen -->
+    <canvas id="rubiks-canvas" aria-hidden="true"></canvas>
+
+    <!-- Gradient background layer (behind canvas, pointer-events none) -->
+    <div class="rubiks-bg" aria-hidden="true"></div>
+
+    <!-- Loading state (shown until Three.js scene is ready) -->
+    <div id="rubiks-loading" class="rubiks-loading" aria-live="polite" aria-label="Loading cube">
+      <div class="rubiks-loading-inner">
+        <div class="rubiks-loading-hex" aria-hidden="true">⬡</div>
+        <p class="rubiks-loading-title">CUBE REALIGNMENT</p>
+        <p class="rubiks-loading-sub" id="rubiks-loading-sub">INITIALIZING 3D ENGINE…</p>
+        <div class="rubiks-loading-track" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+          <div class="rubiks-loading-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Auto-hiding top HUD -->
+    <header class="rubiks-hud" id="rubiks-hud" aria-label="Game HUD">
+      <div class="rubiks-hud-left">
+        <div class="rubiks-brand">
+          <span class="rubiks-brand-hex">⬡</span>
+          <span>PLATVIEW</span>
+        </div>
+        <span class="rubiks-chip rubiks-level-chip" id="rubiks-level-chip">LEVEL 01</span>
+      </div>
+      <div class="rubiks-hud-center">
+        <div class="rubiks-hud-stat" aria-label="Time remaining">
+          <span class="rubiks-hud-icon">⏱</span>
+          <span class="rubiks-hud-timer" id="rubiks-timer">05:00</span>
+        </div>
+      </div>
+      <div class="rubiks-hud-right">
+        <!-- Hint button — shown only for levels 1-3, toggled by JS -->
+        <button class="btn-rubiks-hint hidden" id="btn-rubiks-hint" aria-label="Show hint">
+          💡 HINT
+        </button>
+        <button class="btn btn-ghost btn-sm" id="btn-rubiks-exit">✕ EXIT</button>
+      </div>
+    </header>
+
+    <!-- Objective label -->
+    <div class="rubiks-objective" id="rubiks-objective" aria-label="Puzzle objective"></div>
+
+    <!-- Always-visible bottom breach bar (time-driven) -->
+    <div class="rubiks-breach-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Time breach">
+      <div class="rubiks-breach-fill" id="rubiks-breach-fill"></div>
+    </div>
+
+    <!-- Hint arrow overlay — centered, shows next move to make -->
+    <div id="rubiks-hint-overlay" class="rubiks-hint-overlay hidden" aria-live="assertive">
+      <div class="rubiks-hint-card">
+        <span class="rubiks-hint-arrow" id="rubiks-hint-arrow">→</span>
+        <p class="rubiks-hint-text" id="rubiks-hint-text">SWIPE RIGHT ON THE TOP ROW</p>
+        <p class="rubiks-hint-note">Follow the arrow to solve this step</p>
+      </div>
+    </div>
+
+    <!-- Help drawer — right edge, explains controls -->
+    <div id="rubiks-help-drawer" class="rubiks-help-drawer" aria-label="Controls guide">
+      <button class="rubiks-help-toggle" id="btn-rubiks-help" aria-label="Toggle controls guide" title="Controls">
+        <span class="rubiks-help-toggle-icon" id="rubiks-help-icon">?</span>
+      </button>
+      <div class="rubiks-help-content">
+        <h3 class="rubiks-help-title">CONTROLS</h3>
+        <ul class="rubiks-help-list">
+          <li>
+            <span class="rubiks-help-icon-item">🖱</span>
+            <span><strong>Drag on a face</strong><br>Twists that row or column</span>
+          </li>
+          <li>
+            <span class="rubiks-help-icon-item">🔄</span>
+            <span><strong>Drag on empty space</strong><br>Orbits the camera around the cube</span>
+          </li>
+          <li>
+            <span class="rubiks-help-icon-item">⬆</span>
+            <span><strong>Move mouse to top</strong><br>Reveals the timer HUD</span>
+          </li>
+          <li>
+            <span class="rubiks-help-icon-item">🎯</span>
+            <span><strong>Goal:</strong> Make every face show one single domain colour</span>
+          </li>
+        </ul>
+        <div class="rubiks-help-hint-note" id="rubiks-help-hint-note">
+          💡 Use the <strong>HINT</strong> button in the HUD for step-by-step guidance
+        </div>
+      </div>
+    </div>
+
+    <!-- Result overlay (reuses aro- pattern) -->
+    <div id="rubiks-overlay" class="arena-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="rubiks-aro-title">
+      <div class="aro-card">
+        <span class="aro-icon" id="rubiks-aro-icon" aria-hidden="true">⬡</span>
+        <h2 class="aro-title" id="rubiks-aro-title">CUBE SOLVED</h2>
+        <p class="aro-subtitle" id="rubiks-aro-subtitle"></p>
+        <div class="aro-actions" id="rubiks-aro-actions"></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Arena Victory / Defeat Overlay -->
+  <div id="arena-overlay" class="arena-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="aro-title">
+    <div class="aro-card">
+      <span class="aro-icon victory" id="aro-icon" aria-hidden="true">✓</span>
+      <h2 class="aro-title victory" id="aro-title">VICTORY</h2>
+      <p class="aro-subtitle" id="aro-subtitle">Puzzle solved — see your score breakdown</p>
+      <div class="aro-actions" id="aro-actions"></div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Floating theme toggle -->
+  <button id="theme-toggle" aria-label="Toggle light/dark theme" title="Toggle theme">☀</button>
+
+  <!-- App bootstrap -->
+  <script type="module" src="scripts/main.js"></script>
+</body>
+</html>

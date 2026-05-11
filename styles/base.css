@@ -1,0 +1,109 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  min-height: 100vh;
+  position: relative;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ── Global scanline overlay (dark mode only) ── */
+html[data-theme="dark"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.12) 2px,
+    rgba(0, 0, 0, 0.12) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── Global dot-grid overlay (subtle in both modes) ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(0, 198, 255, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 9998;
+  transition: opacity 0.3s ease;
+}
+html:not([data-theme="dark"]) body::after { opacity: 0.25; }
+
+/* ── Screen Visibility System ── */
+.screen { display: none; }
+
+body[data-screen="tutorial"]     #screen-tutorial,
+body[data-screen="registration"] #screen-registration,
+body[data-screen="lobby"]        #screen-lobby,
+body[data-screen="arena"]        #screen-arena,
+body[data-screen="result"]       #screen-result {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+body[data-screen="rubiks"] #screen-rubiks {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Light mode — raise shadow contrast ── */
+html:not([data-theme="dark"]) {
+  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--muted); }
+::-webkit-scrollbar-thumb { background: rgba(0, 198, 255, 0.35); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0, 198, 255, 0.55); }
+
+/* ── Selection ── */
+::selection { background: rgba(0, 198, 255, 0.22); color: var(--foreground); }
+
+/* ── Links ── */
+a { color: var(--cyan); text-decoration: none; }
+
+/* ── Utility ── */
+.hidden { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* ── Floating theme toggle ── */
+#theme-toggle {
+  position: fixed;
+  bottom: var(--sp-6);
+  left: var(--sp-6);
+  z-index: var(--z-toast);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--card);
+  border: var(--border-subtle);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: background var(--t-normal), box-shadow var(--t-fast), transform var(--t-fast);
+  color: var(--foreground);
+}
+#theme-toggle:hover {
+  box-shadow: var(--glow-cyan);
+  transform: scale(1.1);
+}

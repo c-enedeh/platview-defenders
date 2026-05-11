@@ -1,0 +1,146 @@
+/* ── Screen entrance (glitch-in) ── */
+@keyframes glitchIn {
+  0%   { clip-path: inset(100% 0 0 0); transform: skewX(-4deg); opacity: 0; }
+  25%  { clip-path: inset(65% 0 0 0);  transform: skewX(2deg);  opacity: 0.5; }
+  50%  { clip-path: inset(30% 0 0 0);  transform: skewX(-1deg); opacity: 0.8; }
+  75%  { clip-path: inset(8% 0 0 0);   transform: skewX(0.5deg); opacity: 0.95; }
+  100% { clip-path: inset(0% 0 0 0);   transform: skewX(0deg);  opacity: 1; }
+}
+
+.screen-enter {
+  animation: glitchIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Fade + slide up ── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.anim-fade-up { animation: fadeSlideUp 0.45s var(--t-slow) both; }
+.anim-fade-up-1 { animation: fadeSlideUp 0.45s 0.1s var(--t-slow) both; }
+.anim-fade-up-2 { animation: fadeSlideUp 0.45s 0.2s var(--t-slow) both; }
+.anim-fade-up-3 { animation: fadeSlideUp 0.45s 0.3s var(--t-slow) both; }
+.anim-fade-up-4 { animation: fadeSlideUp 0.45s 0.4s var(--t-slow) both; }
+
+/* ── Pop in (result icon) ── */
+@keyframes popIn {
+  0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+  70%  { transform: scale(1.15) rotate(3deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+.anim-pop-in { animation: popIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* ── Blink cursor ── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+.blink { animation: blink 1s step-end infinite; }
+
+/* ── Timer urgent pulse ── */
+@keyframes timerPulse {
+  from { opacity: 1; }
+  to   { opacity: 0.55; }
+}
+.timer-urgent {
+  animation: timerPulse 0.5s ease infinite alternate !important;
+}
+
+/* ── Breach bar flash (full-screen red) ── */
+@keyframes breachFlash {
+  0%   { opacity: 0; }
+  20%  { opacity: 0.35; }
+  40%  { opacity: 0; }
+  60%  { opacity: 0.45; }
+  80%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+.breach-flash-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--red);
+  pointer-events: none;
+  z-index: calc(var(--z-overlay) - 1);
+  animation: breachFlash 0.7s ease forwards;
+}
+
+/* ── Tile shimmer ── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.tile-shimmer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s ease infinite;
+}
+
+/* ── Shake (wrong move) ── */
+@keyframes shake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-6px); }
+  40%  { transform: translateX(6px); }
+  60%  { transform: translateX(-4px); }
+  80%  { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+/* ── Threat pulse ── */
+@keyframes threatPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 58, 58, 0.5); }
+  70%  { box-shadow: 0 0 0 8px rgba(255, 58, 58, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 58, 58, 0); }
+}
+
+/* ── Arena result overlay ── */
+@keyframes overlayReveal {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes iconPop {
+  0%   { opacity: 0; transform: scale(0.18) rotate(-22deg); filter: blur(18px); }
+  52%  { opacity: 1; transform: scale(1.22) rotate(5deg);  filter: blur(0); }
+  70%  { transform: scale(0.92) rotate(-2deg); }
+  86%  { transform: scale(1.07) rotate(1deg); }
+  100% { transform: scale(1)    rotate(0deg); }
+}
+
+@keyframes titleGlitch {
+  0%   { opacity: 0; letter-spacing: 0.75em; filter: blur(10px); transform: translateY(18px); }
+  42%  { opacity: 1; letter-spacing: 0.13em; filter: blur(0);    transform: translateY(0); }
+  60%  { letter-spacing: 0.07em; }
+  76%  { letter-spacing: 0.12em; }
+  100% { letter-spacing: 0.1em; }
+}
+
+/* ── PB flash ── */
+@keyframes pbFlash {
+  from { opacity: 1; }
+  to   { opacity: 0.6; }
+}
+.anim-pb-flash { animation: pbFlash 0.8s ease infinite alternate; }
+
+/* ── Toast entrance ── */
+@keyframes toastIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ── Slide-in from bottom (result breakdown rows) ── */
+@keyframes slideInBottom {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.anim-slide-row-1 { animation: slideInBottom 0.35s 0.3s ease both; }
+.anim-slide-row-2 { animation: slideInBottom 0.35s 0.5s ease both; }
+.anim-slide-row-3 { animation: slideInBottom 0.35s 0.7s ease both; }
+
+/* ── Mini cube tile shimmer (registration decoration) ── */
+@keyframes tileShimmer {
+  0%   { filter: brightness(0.8); }
+  100% { filter: brightness(1.2); }
+}

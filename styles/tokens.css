@@ -1,0 +1,140 @@
+/* ════════════════════════════════════════════
+   LIGHT THEME  (default :root)
+════════════════════════════════════════════ */
+:root {
+  --radius: 0.625rem;
+  --background:           #fff;
+  --hero:                 #f8fafc;
+  --foreground:           #0f172a;
+  --card:                 #f1f5f9;
+  --card-foreground:      #0f172a;
+  --popover:              #fff;
+  --popover-foreground:   #0f172a;
+  --primary:              #00af5c;
+  --primary-foreground:   #000;
+  --secondary:            #0035af;
+  --secondary-foreground: #fff;
+  --muted:                #f1f5f9;
+  --muted-foreground:     #64748b;
+  --accent:               #e2e8f0;
+  --accent-foreground:    #0f172a;
+  --destructive:          #e7000b;
+  --border:               #e2e8f0;
+  --input:                #e2e8f0;
+  --ring:                 #94a3b8;
+}
+
+/* ════════════════════════════════════════════
+   DARK THEME
+════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --radius: 0.625rem;
+  --background:           #0f1117;
+  --hero:                 #13171e;
+  --foreground:           #e5e7eb;
+  --card:                 #13171e;
+  --card-foreground:      #f3f4f6;
+  --popover:              #0b0e14;
+  --popover-foreground:   #f3f4f6;
+  --primary:              #00af5c;
+  --primary-foreground:   #000;
+  --secondary:            #0035af;
+  --secondary-foreground: #fff;
+  --muted:                #1a1f2b;
+  --muted-foreground:     #9ca3af;
+  --accent:               #1e2939;
+  --accent-foreground:    #f3f4f6;
+  --destructive:          #e7000b;
+  --border:               #1e2939;
+  --input:                #1e2939;
+  --ring:                 #374151;
+}
+
+/* ════════════════════════════════════════════
+   DERIVED TEXT TOKENS  (update with theme)
+════════════════════════════════════════════ */
+:root {
+  --text-heading: #0f172a;
+  --text-body:    #374151;
+  --text-muted:   #64748b;
+  --text-on-dark: #ffffff;  /* text that must always be white (e.g. on tiles) */
+}
+[data-theme="dark"] {
+  --text-heading: #ffffff;
+  --text-body:    rgba(255, 255, 255, 0.65);
+  --text-muted:   rgba(255, 255, 255, 0.38);
+}
+
+/* ════════════════════════════════════════════
+   GAME TOKENS  (map theme vars → game aliases)
+════════════════════════════════════════════ */
+:root {
+  /* ── Backgrounds (theme-driven) ── */
+  --bg-void:     var(--background);
+  --bg-base:     var(--hero);
+  --bg-surface:  var(--card);
+  --bg-elevated: var(--accent);
+  --bg-overlay:  rgba(0, 0, 0, 0.72);
+
+  /* ── Borders (theme-driven) ── */
+  --border-subtle: 1px solid var(--border);
+  --border-active: 1px solid rgba(0, 198, 255, 0.55);
+  --border-glow:   0 0 0 1px rgba(0, 198, 255, 0.35);
+
+  /* ── Game Accent Colors (always constant — game identity) ── */
+  --cyan:             #00C6FF;
+  --cyan-glow:        rgba(0, 198, 255, 0.25);
+  --cyan-dim:         #007BA8;
+  --neon-green:       #00FF8C;
+  --neon-green-glow:  rgba(0, 255, 140, 0.2);
+  --amber:            #FFB020;
+  --red:              #FF3A3A;
+  --red-glow:         rgba(255, 58, 58, 0.25);
+  --purple:           #7B47FF;
+
+  /* ── Tile Domain Colors (constant) ── */
+  --tile-iam:      #1A4FC4;
+  --tile-cloud:    #0F8FD8;
+  --tile-soc:      #0DAF82;
+  --tile-network:  #6B3FA0;
+  --tile-endpoint: #C44B1A;
+  --tile-data:     #B8A000;
+
+  /* ── Typography ── */
+  --font-display: 'Rajdhani', 'Orbitron', sans-serif;
+  --font-body:    'DM Sans', 'Exo 2', sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', monospace;
+
+  /* ── Spacing Scale (8pt grid) ── */
+  --sp-1:  4px;  --sp-2:  8px;  --sp-3:  12px; --sp-4:  16px;
+  --sp-5:  20px; --sp-6:  24px; --sp-8:  32px; --sp-10: 40px;
+  --sp-12: 48px; --sp-16: 64px;
+
+  /* ── Radius ── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  /* ── Shadows / Glows ── */
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.18);
+  --glow-cyan:   0 0 18px rgba(0, 198, 255, 0.45), 0 0 6px rgba(0, 198, 255, 0.35);
+  --glow-green:  0 0 18px rgba(0, 255, 140, 0.40), 0 0 6px rgba(0, 255, 140, 0.25);
+  --glow-red:    0 0 18px rgba(255, 58, 58, 0.50),  0 0 6px rgba(255, 58, 58, 0.35);
+  --glow-amber:  0 0 14px rgba(255, 176, 32, 0.40);
+
+  /* ── Transitions ── */
+  --t-fast:   120ms ease;
+  --t-normal: 220ms ease;
+  --t-slow:   380ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ── Z-index Scale ── */
+  --z-hud:     50;
+  --z-overlay: 100;
+  --z-toast:   200;
+
+  /* ── Breach Semantic Colors ── */
+  --breach-safe:   var(--neon-green);
+  --breach-warn:   var(--amber);
+  --breach-danger: var(--red);
+}

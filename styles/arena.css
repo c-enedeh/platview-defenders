@@ -1,0 +1,288 @@
+#screen-arena {
+  background: var(--bg-base);
+  overflow-y: auto;
+}
+
+/* ── HUD ── */
+.arena-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-3) var(--sp-6);
+  background: rgba(8, 14, 26, 0.95);
+  border-bottom: var(--border-subtle);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-hud);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.arena-hud.hud-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-100%);
+}
+.hud-left  { display: flex; align-items: center; gap: var(--sp-3); }
+.hud-center { display: flex; align-items: center; gap: var(--sp-6); }
+.hud-right  { display: flex; align-items: center; gap: var(--sp-3); }
+
+.hud-chip {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  padding: 3px 9px;
+}
+.level-chip { background: rgba(0,198,255,0.12); color: var(--cyan); }
+.mode-chip  { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.45); }
+
+.hud-stat { display: flex; align-items: center; gap: var(--sp-2); }
+.hud-icon { color: rgba(255,255,255,0.3); font-size: 14px; }
+.hud-value {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1;
+}
+.hud-timer {
+  color: var(--cyan);
+  text-shadow: 0 0 14px rgba(0,198,255,0.5);
+  transition: color 0.3s ease;
+}
+.hud-timer.urgent {
+  color: var(--red) !important;
+  text-shadow: var(--glow-red);
+}
+.hud-unit {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: rgba(255,255,255,0.28);
+  text-transform: uppercase;
+}
+
+/* ── Arena main ── */
+.arena-main {
+  flex: 1;
+  padding: var(--sp-8) var(--sp-6);
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.puzzle-header {
+  margin-bottom: var(--sp-8);
+}
+.puzzle-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.puzzle-objective {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: rgba(255,255,255,0.45);
+  margin-top: var(--sp-2);
+  line-height: 1.5;
+}
+
+/* ── Puzzle layout ── */
+.puzzle-layout {
+  display: flex;
+  gap: var(--sp-10);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.board-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+.board-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  color: rgba(255,255,255,0.28);
+  text-transform: uppercase;
+}
+
+/* ── Puzzle board grid ── */
+.puzzle-board {
+  display: grid;
+  grid-template-columns: repeat(var(--board-cols, 3), 1fr);
+  gap: 6px;
+}
+
+/* Tile sizes depending on grid cols */
+.puzzle-board[data-cols="3"] .tile { width: 120px; height: 120px; font-size: 15px; }
+.puzzle-board[data-cols="4"] .tile { width: 102px; height: 102px; font-size: 13px; }
+.puzzle-board[data-cols="6"] .tile { width: 84px;  height: 84px;  font-size: 11px; }
+.puzzle-board[data-cols="6"] .tile__abbr  { font-size: 12px; }
+.puzzle-board[data-cols="6"] .tile__label { font-size: 9px; }
+
+/* Threat matching layout — 4-column flex wrap */
+.threat-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  max-width: 620px;
+}
+.threat-board .tile { width: 128px; height: 112px; }
+
+/* Incident response board */
+.incident-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-width: 660px;
+}
+.incident-board .tile { width: 140px; height: 124px; }
+
+/* ── Target board ── */
+.target-wrapper {
+  opacity: 0.65;
+}
+
+/* ── Arena footer ── */
+.arena-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--sp-4) var(--sp-6);
+  border-top: var(--border-subtle);
+  background: rgba(8,14,26,0.9);
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-hud);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+.arena-footer.footer-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(100%);
+}
+
+/* ══════════════════════════════════════════
+   ARENA RESULT OVERLAY  (victory / defeat)
+══════════════════════════════════════════ */
+.arena-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-overlay) + 10);
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-6);
+  animation: overlayReveal 0.3s ease both;
+}
+
+.aro-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-5);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.aro-icon {
+  font-size: 100px;
+  line-height: 1;
+  display: block;
+  animation: iconPop 0.72s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.aro-icon.victory {
+  color: var(--neon-green);
+  text-shadow: var(--glow-green), 0 0 60px rgba(0, 255, 140, 0.22);
+}
+.aro-icon.defeat {
+  color: var(--red);
+  text-shadow: var(--glow-red), 0 0 60px rgba(255, 58, 58, 0.22);
+}
+
+.aro-title {
+  font-family: var(--font-display);
+  font-size: clamp(44px, 10vw, 68px);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1;
+  animation: titleGlitch 0.6s 0.08s ease both;
+}
+.aro-title.victory { color: var(--neon-green); text-shadow: var(--glow-green); }
+.aro-title.defeat  { color: var(--red);        text-shadow: var(--glow-red); }
+
+.aro-subtitle {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.65;
+  max-width: 360px;
+  animation: fadeSlideUp 0.45s 0.32s ease both;
+}
+
+.aro-actions {
+  display: flex;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeSlideUp 0.45s 0.5s ease both;
+}
+
+/* ── Incident response specific ── */
+.spawn-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+}
+.spawn-label { letter-spacing: 0.15em; text-transform: uppercase; }
+
+@media (max-width: 700px) {
+  .puzzle-layout { flex-direction: column; }
+  .arena-hud { padding: var(--sp-2) var(--sp-4); }
+  .hud-center { gap: var(--sp-4); }
+  .hud-value { font-size: 16px; }
+  .puzzle-board[data-cols="3"] .tile { width: 88px;  height: 88px; }
+  .puzzle-board[data-cols="4"] .tile { width: 76px;  height: 76px; }
+  .puzzle-board[data-cols="6"] .tile { width: 62px;  height: 62px; }
+  .threat-board .tile   { width: 88px;  height: 80px; }
+  .incident-board .tile { width: 88px;  height: 80px; }
+  .mode-chip { display: none; }
+  .arena-main { padding: var(--sp-4) var(--sp-3); }
+  .threat-board   { grid-template-columns: repeat(2, 1fr); max-width: none; }
+  .incident-board { grid-template-columns: repeat(2, 1fr); max-width: none; }
+}
+
+@media (max-width: 480px) {
+  .hud-left .level-chip { font-size: 9px; padding: 2px 6px; }
+  .hud-value            { font-size: 14px; }
+  .hud-center           { gap: var(--sp-2); }
+
+  .puzzle-board[data-cols="3"] .tile { width: 80px;  height: 80px;  font-size: 12px; }
+  .puzzle-board[data-cols="4"] .tile { width: 66px;  height: 66px;  font-size: 11px; }
+  .puzzle-board[data-cols="6"] .tile { width: 50px;  height: 50px;  font-size: 9px; }
+
+  .threat-board .tile   { width: auto; height: 80px; }
+  .incident-board .tile { width: auto; height: 80px; }
+
+  .arena-footer { flex-direction: column; gap: var(--sp-2); padding: var(--sp-3); }
+  .arena-main   { padding: var(--sp-3) var(--sp-2); }
+}
