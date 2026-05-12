@@ -2,6 +2,17 @@
 
 html { font-size: 16px; scroll-behavior: smooth; }
 
+/* ── Theme transition: only fires during the toggle, never during hover etc. ── */
+html.theme-transitioning,
+html.theme-transitioning * {
+  transition:
+    background-color 0.35s ease,
+    color            0.3s  ease,
+    border-color     0.3s  ease,
+    box-shadow       0.3s  ease,
+    opacity          0.3s  ease !important;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
@@ -9,11 +20,10 @@ body {
   overflow-x: hidden;
   min-height: 100vh;
   position: relative;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* ── Global scanline overlay (dark mode only) ── */
-html[data-theme="dark"] body::before {
+/* ── Global scanline overlay (dark mode only, always rendered to avoid flash on toggle) ── */
+body::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -26,7 +36,10 @@ html[data-theme="dark"] body::before {
   );
   pointer-events: none;
   z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
+html[data-theme="dark"] body::before { opacity: 1; }
 
 /* ── Global dot-grid overlay (subtle in both modes) ── */
 body::after {
@@ -62,9 +75,54 @@ body[data-screen="rubiks"] #screen-rubiks {
   overflow: hidden;
 }
 
-/* ── Light mode — raise shadow contrast ── */
+/* ── Light mode overrides — shadows instead of borders ── */
 html:not([data-theme="dark"]) {
-  --shadow-card: 0 2px 16px rgba(0, 0, 0, 0.1);
+  --shadow-card: 0 4px 24px rgba(26, 32, 160, 0.13), 0 1px 6px rgba(26, 32, 160, 0.07);
+}
+
+/* Cards get elevation via shadow; lighten the border so shadow does the work */
+html:not([data-theme="dark"]) .mode-card {
+  border-color: transparent;
+  box-shadow: 0 4px 24px rgba(26, 32, 160, 0.13), 0 1px 6px rgba(26, 32, 160, 0.07);
+}
+html:not([data-theme="dark"]) .mode-card:hover {
+  box-shadow: 0 8px 40px rgba(26, 32, 160, 0.2), 0 2px 8px rgba(26, 32, 160, 0.1);
+  border-color: transparent;
+}
+html:not([data-theme="dark"]) .leaderboard-card,
+html:not([data-theme="dark"]) .history-table,
+html:not([data-theme="dark"]) .personal-best-bar {
+  border-color: transparent;
+  box-shadow: 0 4px 24px rgba(26, 32, 160, 0.11), 0 1px 4px rgba(26, 32, 160, 0.06);
+}
+
+/* Mode card hover borders: make visible on light backgrounds */
+html:not([data-theme="dark"]) .mode-card[data-mode="domain"]:hover   { border-color: rgba(0, 107, 94, 0.5); }
+html:not([data-theme="dark"]) .mode-card[data-mode="threat"]:hover   { border-color: rgba(26, 122, 71, 0.5); }
+html:not([data-theme="dark"]) .mode-card[data-mode="incident"]:hover { border-color: rgba(180, 0, 180, 0.5); }
+html:not([data-theme="dark"]) .mode-card[data-mode="rubiks"]:hover   { border-color: rgba(91, 31, 223, 0.5); }
+
+/* Leaderboard "me" row highlight: visible on light bg */
+html:not([data-theme="dark"]) .lb-table .lb-me {
+  background: rgba(0, 107, 94, 0.07);
+  outline-color: rgba(0, 107, 94, 0.3);
+}
+
+/* Returning-user notice: border uses neon green, swap to dark teal */
+html:not([data-theme="dark"]) .reg-returning {
+  border-color: rgba(26, 122, 71, 0.4);
+  background: rgba(26, 122, 71, 0.06);
+}
+
+/* Personal best bar: replace neon border with readable teal */
+html:not([data-theme="dark"]) .personal-best-bar {
+  border-color: transparent;
+}
+
+/* Dot-grid: swap to navy dots in light mode for visibility */
+html:not([data-theme="dark"]) body::after {
+  background-image: radial-gradient(circle, rgba(26, 32, 160, 0.07) 1px, transparent 1px);
+  opacity: 0.5;
 }
 
 /* ── Scrollbar ── */
@@ -83,6 +141,11 @@ a { color: var(--cyan); text-decoration: none; }
 .hidden { display: none !important; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
+/* ── Logo theme switching (dark = white logos, light = full-colour logos) ── */
+.logo-img { display: block; width: auto; flex-shrink: 0; }
+html[data-theme="dark"]       .logo-light { display: none; }
+html:not([data-theme="dark"]) .logo-dark  { display: none; }
+
 /* ── Global loading overlay ── */
 #global-loading {
   position: fixed;
@@ -95,12 +158,11 @@ a { color: var(--cyan); text-decoration: none; }
     radial-gradient(ellipse 120% 80% at 20% 110%, rgba(0,198,255,0.10) 0%, transparent 55%),
     radial-gradient(ellipse 80% 60% at 80% -10%,  rgba(123,71,255,0.08) 0%, transparent 50%),
     rgba(10, 13, 20, 0.97);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
+  will-change: opacity;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
 }
 #global-loading.active {
   opacity: 1;
@@ -117,11 +179,11 @@ a { color: var(--cyan); text-decoration: none; }
   width: 100%;
 }
 .global-loading-hex {
-  font-size: 72px;
-  line-height: 1;
-  color: var(--cyan);
-  text-shadow: var(--glow-cyan), 0 0 60px rgba(0,198,255,0.3);
+  height: 72px;
+  width: auto;
   animation: rubiks-hex-spin 2s linear infinite;
+  display: block;
+  filter: drop-shadow(0 0 12px rgba(0,255,209,0.5));
 }
 .global-loading-title {
   font-family: var(--font-display);

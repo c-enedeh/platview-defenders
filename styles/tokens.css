@@ -4,24 +4,45 @@
 :root {
   --radius: 0.625rem;
   --background:           #fff;
-  --hero:                 #f8fafc;
+  --hero:                 #EEF0FF;
   --foreground:           #0f172a;
-  --card:                 #f1f5f9;
+  --card:                 #E8ECFF;
   --card-foreground:      #0f172a;
   --popover:              #fff;
   --popover-foreground:   #0f172a;
-  --primary:              #00af5c;
+  --primary:              #22A85C;
   --primary-foreground:   #000;
-  --secondary:            #0035af;
+  --secondary:            #1A20A0;
   --secondary-foreground: #fff;
-  --muted:                #f1f5f9;
-  --muted-foreground:     #64748b;
-  --accent:               #e2e8f0;
+  --muted:                #E8ECFF;
+  --muted-foreground:     #4a5568;
+  --accent:               #dce0f5;
   --accent-foreground:    #0f172a;
-  --destructive:          #e7000b;
-  --border:               #e2e8f0;
-  --input:                #e2e8f0;
+  --destructive:          #cc0000;
+  --border:               #c8cef0;
+  --input:                #c8cef0;
   --ring:                 #94a3b8;
+
+  /* Light-mode readable accent colors */
+  --cyan:             #006B5E;
+  --cyan-glow:        rgba(0, 107, 94, 0.2);
+  --cyan-dim:         #004D45;
+  --neon-green:       #1A7A47;
+  --neon-green-glow:  rgba(26, 122, 71, 0.2);
+  --amber:            #B87800;
+  --red:              #CC0000;
+  --red-glow:         rgba(200, 0, 0, 0.2);
+  --purple:           #5B1FDF;
+  --incident:         #CC00CC;
+  --incident-glow:    rgba(180, 0, 180, 0.2);
+  --border-active:    1px solid rgba(0, 107, 94, 0.5);
+  --border-glow:      0 0 0 1px rgba(0, 107, 94, 0.3);
+  --glow-cyan:        0 2px 12px rgba(0, 107, 94, 0.22);
+  --glow-green:       0 2px 12px rgba(26, 122, 71, 0.22);
+  --glow-red:         0 2px 12px rgba(200, 0, 0, 0.22);
+  --glow-incident:    0 2px 12px rgba(180, 0, 180, 0.22);
+  --glow-amber:       0 2px 8px rgba(184, 120, 0, 0.22);
+  --shadow-card:      0 2px 20px rgba(26, 32, 160, 0.12), 0 1px 4px rgba(26, 32, 160, 0.06);
 }
 
 /* ════════════════════════════════════════════
@@ -29,25 +50,46 @@
 ════════════════════════════════════════════ */
 [data-theme="dark"] {
   --radius: 0.625rem;
-  --background:           #0f1117;
-  --hero:                 #13171e;
+  --background:           #0D0D1A;
+  --hero:                 #131B35;
   --foreground:           #e5e7eb;
-  --card:                 #13171e;
+  --card:                 #0D1228;
   --card-foreground:      #f3f4f6;
-  --popover:              #0b0e14;
+  --popover:              #0A0E1E;
   --popover-foreground:   #f3f4f6;
-  --primary:              #00af5c;
+  --primary:              #22A85C;
   --primary-foreground:   #000;
-  --secondary:            #0035af;
+  --secondary:            #1A20A0;
   --secondary-foreground: #fff;
-  --muted:                #1a1f2b;
+  --muted:                #131B35;
   --muted-foreground:     #9ca3af;
-  --accent:               #1e2939;
+  --accent:               #1A2245;
   --accent-foreground:    #f3f4f6;
   --destructive:          #e7000b;
-  --border:               #1e2939;
-  --input:                #1e2939;
+  --border:               #1A2245;
+  --input:                #1A2245;
   --ring:                 #374151;
+
+  /* Dark-mode bright cyberpunk accent colors */
+  --cyan:             #00FFD1;
+  --cyan-glow:        rgba(0, 255, 209, 0.25);
+  --cyan-dim:         #00A885;
+  --neon-green:       #22A85C;
+  --neon-green-glow:  rgba(34, 168, 92, 0.25);
+  --amber:            #FFB020;
+  --red:              #FF3A3A;
+  --red-glow:         rgba(255, 58, 58, 0.25);
+  --purple:           #7B2FFF;
+  --incident:         #FF3CFF;
+  --incident-glow:    rgba(255, 60, 255, 0.3);
+  --border-active:    1px solid rgba(0, 255, 209, 0.55);
+  --border-glow:      0 0 0 1px rgba(0, 255, 209, 0.35);
+  --glow-cyan:        0 0 18px rgba(0, 255, 209, 0.45), 0 0 6px rgba(0, 255, 209, 0.35);
+  --glow-green:       0 0 18px rgba(34, 168, 92, 0.45),  0 0 6px rgba(34, 168, 92, 0.30);
+  --glow-red:         0 0 18px rgba(255, 58, 58, 0.50),  0 0 6px rgba(255, 58, 58, 0.35);
+  --glow-incident:    0 0 18px rgba(255, 60, 255, 0.45), 0 0 6px rgba(255, 60, 255, 0.30);
+  --glow-amber:       0 0 14px rgba(255, 176, 32, 0.40);
+  --shadow-card:      0 4px 24px rgba(0, 0, 0, 0.18);
 }
 
 /* ════════════════════════════════════════════
@@ -57,7 +99,7 @@
   --text-heading: #0f172a;
   --text-body:    #374151;
   --text-muted:   #64748b;
-  --text-on-dark: #ffffff;  /* text that must always be white (e.g. on tiles) */
+  --text-on-dark: #ffffff;
 }
 [data-theme="dark"] {
   --text-heading: #ffffff;
@@ -66,36 +108,32 @@
 }
 
 /* ════════════════════════════════════════════
-   GAME TOKENS  (map theme vars → game aliases)
+   GAME TOKENS  (non-color constants + aliases)
+   NOTE: accent colors live in theme blocks above.
+   This block only holds things that must NOT
+   override the theme-specific accent values.
 ════════════════════════════════════════════ */
 :root {
-  /* ── Backgrounds (theme-driven) ── */
+  /* ── Background aliases (theme-driven) ── */
   --bg-void:     var(--background);
   --bg-base:     var(--hero);
   --bg-surface:  var(--card);
   --bg-elevated: var(--accent);
   --bg-overlay:  rgba(0, 0, 0, 0.72);
 
-  /* ── Borders (theme-driven) ── */
+  /* ── Border shorthand (theme-driven) ── */
   --border-subtle: 1px solid var(--border);
-  --border-active: 1px solid rgba(0, 198, 255, 0.55);
-  --border-glow:   0 0 0 1px rgba(0, 198, 255, 0.35);
 
-  /* ── Game Accent Colors (always constant — game identity) ── */
-  --cyan:             #00C6FF;
-  --cyan-glow:        rgba(0, 198, 255, 0.25);
-  --cyan-dim:         #007BA8;
-  --neon-green:       #00FF8C;
-  --neon-green-glow:  rgba(0, 255, 140, 0.2);
-  --amber:            #FFB020;
-  --red:              #FF3A3A;
-  --red-glow:         rgba(255, 58, 58, 0.25);
-  --purple:           #7B47FF;
+  /* ── Variable aliases ── */
+  --fg:       var(--foreground);
+  --muted-fg: var(--muted-foreground);
+  --surface-1: var(--card);
+  --surface-2: var(--accent);
 
-  /* ── Tile Domain Colors (constant) ── */
-  --tile-iam:      #1A4FC4;
+  /* ── Tile Domain Colors (constant across themes) ── */
+  --tile-iam:      #1A20A0;
   --tile-cloud:    #0F8FD8;
-  --tile-soc:      #0DAF82;
+  --tile-soc:      #22A85C;
   --tile-network:  #6B3FA0;
   --tile-endpoint: #C44B1A;
   --tile-data:     #B8A000;
@@ -116,13 +154,6 @@
   --radius-lg: 12px;
   --radius-xl: 16px;
 
-  /* ── Shadows / Glows ── */
-  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.18);
-  --glow-cyan:   0 0 18px rgba(0, 198, 255, 0.45), 0 0 6px rgba(0, 198, 255, 0.35);
-  --glow-green:  0 0 18px rgba(0, 255, 140, 0.40), 0 0 6px rgba(0, 255, 140, 0.25);
-  --glow-red:    0 0 18px rgba(255, 58, 58, 0.50),  0 0 6px rgba(255, 58, 58, 0.35);
-  --glow-amber:  0 0 14px rgba(255, 176, 32, 0.40);
-
   /* ── Transitions ── */
   --t-fast:   120ms ease;
   --t-normal: 220ms ease;
@@ -133,7 +164,7 @@
   --z-overlay: 100;
   --z-toast:   200;
 
-  /* ── Breach Semantic Colors ── */
+  /* ── Breach Semantic Colors (resolve at compute time) ── */
   --breach-safe:   var(--neon-green);
   --breach-warn:   var(--amber);
   --breach-danger: var(--red);

@@ -165,6 +165,20 @@
   .score-breakdown    { padding: var(--sp-4) var(--sp-4); }
 }
 
+/* ══════════════════════════════════════════
+   LIGHT MODE OVERRIDES
+══════════════════════════════════════════ */
+html:not([data-theme="dark"]) .status-title        { color: var(--text-heading); }
+html:not([data-theme="dark"]) .result-label        { color: var(--muted-foreground); }
+html:not([data-theme="dark"]) .stat-icon           { color: var(--muted-foreground); }
+html:not([data-theme="dark"]) .stat-value          { color: var(--foreground); }
+html:not([data-theme="dark"]) .stat-label          { color: var(--muted-foreground); }
+html:not([data-theme="dark"]) .score-breakdown h3  { color: var(--muted-foreground); }
+html:not([data-theme="dark"]) .breakdown-row       { color: var(--text-body); }
+html:not([data-theme="dark"]) .breakdown-divider   { background: var(--border); }
+html:not([data-theme="dark"]) .breakdown-total     { color: var(--text-heading); }
+html:not([data-theme="dark"]) .aro-subtitle        { color: var(--text-body); }
+
 /* ── Particle burst container ── */
 #result-particles {
   position: fixed;

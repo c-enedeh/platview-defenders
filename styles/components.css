@@ -323,3 +323,42 @@
   border-radius: 999px;
   transition: width 0.4s ease;
 }
+
+/* ══════════════════════════════════════════
+   LIGHT MODE OVERRIDES
+══════════════════════════════════════════ */
+
+/* Tiles — keep original domain colors; boost border + shadow for visibility on light bg */
+html:not([data-theme="dark"]) .tile {
+  border-color: rgba(0,0,0,0.2);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+/* Tile text must be white since all domain backgrounds are inherently dark */
+html:not([data-theme="dark"]) .tile .tile__abbr  { color: #fff; }
+html:not([data-theme="dark"]) .tile .tile__label { color: rgba(255,255,255,0.72); }
+html:not([data-theme="dark"]) .tile:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.28); }
+html:not([data-theme="dark"]) .tile.selected {
+  border-color: rgba(0,0,0,0.6);
+  box-shadow: 0 0 0 3px rgba(0,0,0,0.14), 0 6px 20px rgba(0,0,0,0.28);
+}
+
+/* Breach bar */
+html:not([data-theme="dark"]) .breach-bar-wrapper {
+  background: var(--background);
+}
+html:not([data-theme="dark"]) .breach-label { color: var(--muted-foreground); }
+html:not([data-theme="dark"]) .breach-track { background: var(--border); }
+html:not([data-theme="dark"]) .breach-pct   { color: var(--muted-foreground); }
+
+/* Progress track */
+html:not([data-theme="dark"]) .progress-track { background: var(--border); }
+
+/* Hint button count */
+html:not([data-theme="dark"]) .hint-count { color: var(--muted-foreground); }
+
+/* Card glass */
+html:not([data-theme="dark"]) .card-glass {
+  background: var(--card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}

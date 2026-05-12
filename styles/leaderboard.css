@@ -37,11 +37,8 @@
   gap: var(--sp-2);
 }
 
-.lb-hex {
-  color: var(--cyan);
-  font-size: 22px;
-  text-shadow: var(--glow-cyan);
-  line-height: 1;
+.lb-hex .logo-img {
+  height: 20px;
 }
 
 .lb-header h2 {

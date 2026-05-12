@@ -35,7 +35,7 @@
   text-transform: uppercase;
   white-space: nowrap;
 }
-.lobby-hex { font-size: 20px; text-shadow: var(--glow-cyan); }
+.lobby-mark { height: 28px; width: auto; }
 .lobby-meta { display: flex; align-items: center; gap: var(--sp-3); flex-shrink: 0; }
 .codename-badge {
   font-family: var(--font-mono);
@@ -148,32 +148,32 @@
 }
 .mode-card[data-mode="domain"]::before   { background: var(--cyan); }
 .mode-card[data-mode="threat"]::before   { background: var(--neon-green); }
-.mode-card[data-mode="incident"]::before { background: var(--red); }
+.mode-card[data-mode="incident"]::before { background: var(--incident); }
 
 /* Subtle background wash */
-.mode-card[data-mode="domain"]   { background: linear-gradient(160deg, rgba(0,198,255,0.04) 0%, var(--card) 45%); }
-.mode-card[data-mode="threat"]   { background: linear-gradient(160deg, rgba(0,255,140,0.04) 0%, var(--card) 45%); }
-.mode-card[data-mode="incident"] { background: linear-gradient(160deg, rgba(255,58,58,0.04)  0%, var(--card) 45%); }
+.mode-card[data-mode="domain"]   { background: linear-gradient(160deg, rgba(0,255,209,0.04) 0%, var(--card) 45%); }
+.mode-card[data-mode="threat"]   { background: linear-gradient(160deg, rgba(34,168,92,0.05) 0%, var(--card) 45%); }
+.mode-card[data-mode="incident"] { background: linear-gradient(160deg, rgba(255,60,255,0.04) 0%, var(--card) 45%); }
 
 .mode-card:hover {
   transform: translateY(-4px);
 }
 .mode-card[data-mode="domain"]:hover {
-  border-color: rgba(0,198,255,0.55);
+  border-color: rgba(0,255,209,0.55);
   box-shadow: var(--glow-cyan), var(--shadow-card);
-  background: linear-gradient(160deg, rgba(0,198,255,0.08) 0%, var(--card) 50%);
+  background: linear-gradient(160deg, rgba(0,255,209,0.08) 0%, var(--card) 50%);
 }
 .mode-card[data-mode="domain"]:hover::before { opacity: 0.25; }
 .mode-card[data-mode="threat"]:hover {
-  border-color: rgba(0,255,140,0.55);
+  border-color: rgba(34,168,92,0.55);
   box-shadow: var(--glow-green), var(--shadow-card);
-  background: linear-gradient(160deg, rgba(0,255,140,0.08) 0%, var(--card) 50%);
+  background: linear-gradient(160deg, rgba(34,168,92,0.08) 0%, var(--card) 50%);
 }
 .mode-card[data-mode="threat"]:hover::before { opacity: 0.25; }
 .mode-card[data-mode="incident"]:hover {
-  border-color: rgba(255,58,58,0.55);
-  box-shadow: var(--glow-red), var(--shadow-card);
-  background: linear-gradient(160deg, rgba(255,58,58,0.08) 0%, var(--card) 50%);
+  border-color: rgba(255,60,255,0.55);
+  box-shadow: var(--glow-incident), var(--shadow-card);
+  background: linear-gradient(160deg, rgba(255,60,255,0.08) 0%, var(--card) 50%);
 }
 .mode-card[data-mode="incident"]:hover::before { opacity: 0.25; }
 
@@ -211,7 +211,7 @@
 }
 .mode-card[data-mode="domain"]   .mode-card__subtitle { color: var(--cyan); }
 .mode-card[data-mode="threat"]   .mode-card__subtitle { color: var(--neon-green); }
-.mode-card[data-mode="incident"] .mode-card__subtitle { color: var(--red); }
+.mode-card[data-mode="incident"] .mode-card__subtitle { color: var(--incident); }
 
 /* ── Description ── */
 .mode-card__info p {
@@ -285,13 +285,13 @@
   transition: background var(--t-fast), color var(--t-fast), box-shadow var(--t-fast);
   white-space: nowrap;
 }
-.mode-card[data-mode="domain"]   .btn-mode-start { color: var(--cyan); border-color: rgba(0,198,255,0.5); }
-.mode-card[data-mode="threat"]   .btn-mode-start { color: var(--neon-green); border-color: rgba(0,255,140,0.4); }
-.mode-card[data-mode="incident"] .btn-mode-start { color: var(--red); border-color: rgba(255,58,58,0.5); }
+.mode-card[data-mode="domain"]   .btn-mode-start { color: var(--cyan); border-color: rgba(0,255,209,0.5); }
+.mode-card[data-mode="threat"]   .btn-mode-start { color: var(--neon-green); border-color: rgba(34,168,92,0.4); }
+.mode-card[data-mode="incident"] .btn-mode-start { color: var(--incident); border-color: rgba(255,60,255,0.5); }
 
 .mode-card[data-mode="domain"]   .btn-mode-start:hover { background: var(--cyan); color: #000; box-shadow: var(--glow-cyan); }
-.mode-card[data-mode="threat"]   .btn-mode-start:hover { background: var(--neon-green); color: #000; box-shadow: var(--glow-green); }
-.mode-card[data-mode="incident"] .btn-mode-start:hover { background: var(--red); color: #fff; box-shadow: var(--glow-red); }
+.mode-card[data-mode="threat"]   .btn-mode-start:hover { background: var(--neon-green); color: #fff; box-shadow: var(--glow-green); }
+.mode-card[data-mode="incident"] .btn-mode-start:hover { background: var(--incident); color: #000; box-shadow: var(--glow-incident); }
 
 /* ══════════════════════════════════════════
    HISTORY TABLE

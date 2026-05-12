@@ -10,9 +10,15 @@ export function initTheme() {
 export function toggleTheme() {
   const current = document.documentElement.dataset.theme || 'dark';
   const next = current === 'dark' ? 'light' : 'dark';
-  document.documentElement.dataset.theme = next;
+  const html = document.documentElement;
+
+  html.classList.add('theme-transitioning');
+  html.dataset.theme = next;
   localStorage.setItem(KEY, next);
   _syncIcon(next);
+
+  // Remove after transition completes so normal hover transitions are unaffected
+  setTimeout(() => html.classList.remove('theme-transitioning'), 400);
 }
 
 function _syncIcon(theme) {
